@@ -19,9 +19,14 @@ import Chats from "./Chats";
 import { getUserData } from "../../utils/AuthStorage";
 import CreatePublication from "./CreatePublication";
 import Publications from "./Publications";
+import MenuModal from "./MenuModal";
 import AdvertisementDetails from "./AdvertisementDetails";
 
 const HomeScreen = () => {
+  const [menuVisible, setMenuVisible] = useState(false);
+  const toggleMenu = () => {
+    setMenuVisible(!menuVisible);
+  };
   const [loading, setLoading] = useState(true);
   const [hasChats, setHasChats] = useState(false);
   const [chatId, setChatId] = useState<string | undefined>();
@@ -197,7 +202,11 @@ const HomeScreen = () => {
           <Text style={[styles.title, styles.titleYellow]}>Esy</Text>
           <Text style={[styles.title, { color: COLORS.white }]}>Chat</Text>
         </View>
+        <TouchableOpacity onPress={toggleMenu}>
         <Entypo name="dots-three-vertical" size={24} color="#fff" />
+        </TouchableOpacity>
+        <MenuModal visible={menuVisible} onClose={toggleMenu}></MenuModal>
+       
       </View>
       {activeTab !== "achat" && activeTab !== "add-publication" && (
         <View style={styles.tabContainer}>
