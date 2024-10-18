@@ -23,7 +23,7 @@ const WelcomeScreen = () => {
           Let’s create your <Text style={styles.Binexo}>Binexopay</Text> account
         </Text>
         <Text style={[styles.desc, { color: colors.text }]}>
-          Get ready to take the first step towards your goals We're here to
+          Get ready towards your goals We're here to
           support you every step of the way. Let's dive in and make progress
           together.
         </Text>
