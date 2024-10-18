@@ -76,61 +76,61 @@ const HomeScreen = () => {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
-  if (!hasChats) {
-    return (
-      <View style={styles.setupContainer}>
-        <View style={styles.titleContainer}>
-          <Image source={images.logo} style={styles.logo} />
-          <Text style={[styles.title, styles.titleYellow]}>Esy</Text>
-          <Text style={[styles.title, styles.titleBlue]}>Chat</Text>
-        </View>
-        <View style={styles.buttonGrid}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              setHasChats(true);
-              setActiveTab("advertisements");
-            }}
-          >
-            <Image
-              source={images.advertisements}
-              style={styles.setupButtonLogo}
-            />
-            <Text style={styles.buttonText}>Publications</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              setHasChats(true);
-              setActiveTab("communication");
-            }}
-          >
-            <Image
-              source={images.communication}
-              style={styles.setupButtonLogo}
-            />
-            <Text style={styles.buttonText}>Communication</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              setHasChats(true);
-              setActiveTab("chats");
-            }}
-          >
-            <Image source={images.chats} style={styles.setupButtonLogo} />
-            <Text style={styles.buttonText}>Chats</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.configButtonContainer}>
-          <TouchableOpacity style={styles.configButton}>
-            <Image source={images.config} style={styles.configIcon} />
-            <Text style={styles.configText}>Configurations</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  }
+  // if (!hasChats) {
+  //   return (
+  //     <View style={styles.setupContainer}>
+  //       <View style={styles.titleContainer}>
+  //         <Image source={images.logo} style={styles.logo} />
+  //         <Text style={[styles.title, styles.titleYellow]}>Esy</Text>
+  //         <Text style={[styles.title, styles.titleBlue]}>Chat</Text>
+  //       </View>
+  //       <View style={styles.buttonGrid}>
+  //         <TouchableOpacity
+  //           style={styles.button}
+  //           onPress={() => {
+  //             setHasChats(true);
+  //             setActiveTab("advertisements");
+  //           }}
+  //         >
+  //           <Image
+  //             source={images.advertisements}
+  //             style={styles.setupButtonLogo}
+  //           />
+  //           <Text style={styles.buttonText}>Publications</Text>
+  //         </TouchableOpacity>
+  //         <TouchableOpacity
+  //           style={styles.button}
+  //           onPress={() => {
+  //             setHasChats(true);
+  //             setActiveTab("communication");
+  //           }}
+  //         >
+  //           <Image
+  //             source={images.communication}
+  //             style={styles.setupButtonLogo}
+  //           />
+  //           <Text style={styles.buttonText}>Communication</Text>
+  //         </TouchableOpacity>
+  //         <TouchableOpacity
+  //           style={styles.button}
+  //           onPress={() => {
+  //             setHasChats(true);
+  //             setActiveTab("chats");
+  //           }}
+  //         >
+  //           <Image source={images.chats} style={styles.setupButtonLogo} />
+  //           <Text style={styles.buttonText}>Chats</Text>
+  //         </TouchableOpacity>
+  //       </View>
+  //       <View style={styles.configButtonContainer}>
+  //         <TouchableOpacity style={styles.configButton}>
+  //           <Image source={images.config} style={styles.configIcon} />
+  //           <Text style={styles.configText}>Configurations</Text>
+  //         </TouchableOpacity>
+  //       </View>
+  //     </View>
+  //   );
+  // }
 
   const renderContent = () => {
     switch (activeTab) {
@@ -202,6 +202,7 @@ const HomeScreen = () => {
       {activeTab !== "achat" && activeTab !== "add-publication" && (
         <View style={styles.tabContainer}>
           <TouchableOpacity style={{marginTop:19, marginRight:9,}} onPress={() => setActiveTab("communication")}>
+            <View style={{flex:1, flexDirection:"column"}}>
             <View
               style={{
                 padding: 5,
@@ -215,7 +216,8 @@ const HomeScreen = () => {
             >
             <Image source={images.profile} />
             </View>
-            <Text style={{marginLeft:15,}}>{currentUser?.name}</Text>
+            <Text style={{marginLeft:15}}>{currentUser?.name}</Text>
+            </View>
           </TouchableOpacity>
           <TouchableOpacity
             style={[

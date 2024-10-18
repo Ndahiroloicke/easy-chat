@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "100%",
+    width: "110%",
     paddingHorizontal: 10,
   },
   logoContainer: {
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   logoText: {
     marginLeft: 10, // Added margin for better spacing between icon and text
     color: "#ffffff", // White text color
-    fontSize: 14, // Slightly larger font for better readability
+    fontSize: 11, // Slightly larger font for better readability
     fontWeight: "bold",
   },
 });

@@ -18,12 +18,17 @@ import {
   doc,
   onSnapshot,
   getDoc,
-  setDoc,
   Timestamp,
 } from "firebase/firestore";
 import { auth, db } from "../../utils/firebase.config";
 import { MaterialIcons } from "@expo/vector-icons";
 import { getUserData } from "../../utils/AuthStorage";
+
+interface User {
+  id: string;
+  name: string;
+  profile: string; // Assuming you have a profile picture URL
+}
 
 interface ChatConversationProps {
   userId?: string;
@@ -95,8 +100,7 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
     };
 
     const createChatIfNotExists = async () => {
-      console.log(currentUser);
-      if (!chatId && userId ) {
+      if (!chatId && userId) {
         try {
           const chatsRef = collection(db, "chats");
           const q = query(
@@ -146,29 +150,43 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
     }
   };
 
-  const renderMessageItem = ({ item }: { item: Message }) => (
-    <View
-      style={[
-        styles.messageContainer,
-        item.senderId === currentUserId
-          ? styles.myMessage
-          : styles.otherMessage,
-      ]}
-    >
-      <Image
-        source={{
-          uri:
-            item.senderId === currentUserId
-              ? currentUser?.profile
-              : user?.profile,
-        }}
-        style={styles.senderImage}
-      />
-      <View style={styles.messageContent}>
-        <Text style={styles.messageText}>{item.content}</Text>
+  const renderMessageItem = ({ item }: { item: Message }) => {
+    const isCurrentUserSender = item.senderId === currentUserId;
+
+    return (
+      <View
+        style={[
+          styles.messageContainer,
+          isCurrentUserSender ? styles.myMessage : styles.otherMessage,
+        ]}
+      >
+        <Image
+          source={{
+            uri:
+              item.senderId === currentUserId
+                ? currentUser?.profile
+                : user?.profile,
+          }}
+          style={styles.senderImage}
+        />
+        <View
+          style={[
+            styles.messageContent,
+            isCurrentUserSender ? styles.myMessageContent : styles.otherMessageContent,
+          ]}
+        >
+          <Text
+            style={[
+              styles.messageText,
+              isCurrentUserSender ? styles.myMessageText : styles.otherMessageText,
+            ]}
+          >
+            {item.content}
+          </Text>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -197,7 +215,7 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -241,11 +259,21 @@ const styles = StyleSheet.create({
     maxWidth: "75%",
     padding: 10,
     borderRadius: 10,
-    backgroundColor: "#f0f0f0",
+  },
+  myMessageContent: {
+    backgroundColor: "#F6F8FC", // White background for messages sent by the user
+  },
+  otherMessageContent: {
+    backgroundColor: "#007bff", // Blue background for messages received
   },
   messageText: {
     fontSize: 16,
-    color: "#333",
+  },
+  myMessageText: {
+    color: "#000", // Black text for messages sent by the user
+  },
+  otherMessageText: {
+    color: "#fff", // White text for messages received
   },
   inputContainer: {
     flexDirection: "row",
