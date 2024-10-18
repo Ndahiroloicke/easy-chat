@@ -23,7 +23,7 @@ const CompleteSetupScreen = () => {
         </View>
         <View style={styles.contentContainer}>
           <View style={styles.textcontainer}>
-            <Text style={styles.header}>You’re All Set!</Text>
+            <Text style={styles.header}>You are All Set!</Text>
             <Text style={styles.subHeader}>
               Your account is ready. Let’s start for your better financial
               experience
