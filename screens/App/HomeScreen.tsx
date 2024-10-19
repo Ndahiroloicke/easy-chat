@@ -23,11 +23,7 @@ import MenuModal from "./MenuModal";
 import AdvertisementDetails from "./AdvertisementDetails";
 
 const HomeScreen = () => {
-  const [menuVisible, setMenuVisible] = useState(false);
-
-  const toggleMenu = () => {
-    setMenuVisible(!menuVisible);
-  };
+  
   const [loading, setLoading] = useState(true);
   const [hasChats, setHasChats] = useState(false);
   const [chatId, setChatId] = useState<string | undefined>();

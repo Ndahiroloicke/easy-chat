@@ -42,7 +42,7 @@ const MenuModal: React.FC<MenuModalProps> = ({ visible, onClose }) => {
             )}
           />
         </View>
-      </TouchableOpacity>
+      </TouchableOpacity> j'  
     </Modal>
   );
 };
