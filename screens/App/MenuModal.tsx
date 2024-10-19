@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     position: 'absolute',
-    top: 40,
+    top: 100,
     right: 10,
     backgroundColor: '#fff',
     padding: 20,
