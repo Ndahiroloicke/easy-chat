@@ -18,6 +18,7 @@ import AuthNavigator from "./Navigation/AuthNavigator";
 import { auth } from "./utils/firebase.config";
 import Toast from "react-native-toast-message";
 import { getUserData } from "./utils/AuthStorage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function App() {
   const [fontsLoaded] = useFonts(FONTS);
@@ -41,10 +42,12 @@ export default function App() {
           if (storedUser && storedUser.authToken) {
             try {
               console.log(storedUser);
+              const password = await AsyncStorage.getItem("userPassword");
+              console.log(password);
               await signInWithEmailAndPassword(
                 auth,
                 storedUser.email,
-                storedUser.password as any
+                password as any
               );
               setUser(auth.currentUser);
             } catch (error: any) {

@@ -30,7 +30,7 @@ import { getFirebaseErrorMessage } from "../../utils/getFirebaseError";
 import { storeUserData } from "../../utils/AuthStorage";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const { width } = Dimensions.get("window");
 
 const validationSchema = Yup.object().shape({
@@ -60,41 +60,51 @@ const LogInScreen: React.FC = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
+  
   const handleSubmit = async (values: FormValues) => {
     setIsLoading(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        values.email,
-        values.password
-      );
-      const user = userCredential.user;
-      const authToken = await user.getIdToken();
-      const refreshToken = await user.getIdToken(true);
-      const userDocRef = doc(db, "users", user.uid);
-      const userDoc = await getDoc(userDocRef);
-      if (!userDoc.exists()) {
-        throw new Error("User document does not exist");
-      }
-      const userDataFromFirestore = userDoc.data();
-      const userData: UserData = {
-        authToken,
-        refreshToken,
-        email: values.email,
-        name: userDataFromFirestore?.name,
-        id: user.uid,
-        sex: userDataFromFirestore?.sex,
-        age: userDataFromFirestore?.age,
-      };
-      await storeUserData(userData);
-      navigation.navigate(routes.HOME);
+        const userCredential = await signInWithEmailAndPassword(
+            auth,
+            values.email,
+            values.password
+        );
+        const user = userCredential.user;
+        const authToken = await user.getIdToken();
+        const refreshToken = await user.getIdToken(true);
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (!userDoc.exists()) {
+            throw new Error("User document does not exist");
+        }
+        const userDataFromFirestore = userDoc.data();
+        console.log(userDataFromFirestore);
+        
+        const userData: UserData = {
+            authToken,
+            refreshToken,
+            email: values.email,
+            name: userDataFromFirestore?.name,
+            id: user.uid,
+            sex: userDataFromFirestore?.sex,
+            age: userDataFromFirestore?.age,
+        };
+
+        await storeUserData(userData);
+        console.log(userData.email);
+        // Store the password in local storage (only if necessary)
+        await AsyncStorage.setItem('userPassword', values.password);
+        console.log("Stored password:", values.password); // Log the password for debugging
+
+        navigation.navigate(routes.HOME);
     } catch (error: any) {
-      ToastAndroid.show(getFirebaseErrorMessage(error.code), ToastAndroid.LONG);
-      console.error("Error logging in:", error.message);
+        ToastAndroid.show(getFirebaseErrorMessage(error.code), ToastAndroid.LONG);
+        console.error("Error logging in:", error.message);
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
-  };
+};
+
   return (
     <ScreenLayout>
       <SafeAreaView style={styles.container}>

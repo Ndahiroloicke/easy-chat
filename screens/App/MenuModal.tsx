@@ -14,9 +14,8 @@ const MenuModal: React.FC<MenuModalProps> = ({ visible, onClose }) => {
     { id: '5', name: 'Publications', icon: <Entypo name="book" size={24} color="#000" /> },
   ];
   const handlePress = (name: string) => {
-    // You can handle navigation here based on the item pressed
     console.log(`${name} clicked`);
-    onClose(); // Close the modal after an item is clicked
+    onClose();
   };
   return (
     <Modal

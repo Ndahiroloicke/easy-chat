@@ -8,7 +8,7 @@ export default Object.freeze({
   IDPREVIEW: "IDPreview",
   PROFILESETUP: "ProfileSetup",
   COMPLETEAUTH: "CompleteAuth",
-  HOME: "HomeScreen",
+  HOME: "Home",
   ADDFACE: "AddFace",
   NOTIFICATION: "Notifications",
   TRANSACTIONS: "Transactions",
