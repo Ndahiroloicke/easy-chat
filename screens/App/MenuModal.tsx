@@ -1,22 +1,37 @@
 import React from 'react';
 import { View, Text, Modal, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { Entypo, MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import routes from '../../Navigation/routes';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthScreenNavigatorProps } from '../../constants/types';
+
 interface MenuModalProps {
   visible: boolean;
   onClose: () => void;
 }
+
 const MenuModal: React.FC<MenuModalProps> = ({ visible, onClose }) => {
+  const navigation = useNavigation<AuthScreenNavigatorProps>();
+  
   const menuItems = [
     { id: '1', name: 'Profile', icon: <MaterialIcons name="person" size={24} color="#000" /> },
     { id: '2', name: 'Chat', icon: <Entypo name="chat" size={24} color="#000" /> },
     { id: '3', name: 'Communication', icon: <Entypo name="message" size={24} color="#000" /> },
     { id: '4', name: 'Announcements', icon: <Entypo name="megaphone" size={24} color="#000" /> },
     { id: '5', name: 'Publications', icon: <Entypo name="book" size={24} color="#000" /> },
+    { id: '6', name: 'Sign out', icon: <Entypo name="arrow-left" size={24} color="#000" /> },
   ];
+
   const handlePress = (name: string) => {
+    if (name === 'Sign out') {
+      AsyncStorage.removeItem("userPassword")
+      navigation.navigate(routes.LOGIN);
+    }
     console.log(`${name} clicked`);
     onClose();
   };
+
   return (
     <Modal
       visible={visible}
@@ -41,6 +56,7 @@ const MenuModal: React.FC<MenuModalProps> = ({ visible, onClose }) => {
     </Modal>
   );
 };
+
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
@@ -69,4 +85,5 @@ const styles = StyleSheet.create({
     color: '#000',
   },
 });
+
 export default MenuModal;
