@@ -48,6 +48,7 @@ const HomeScreen = () => {
       const user = await getUserData();
       if (user) {
         setCurrentUser(user);
+        console.log(user)
       }
     };
     fetchUserData();
@@ -186,7 +187,7 @@ const HomeScreen = () => {
         );
       case "add-publication":
         return (
-          <CreatePublication onClose={() => setActiveTab("advertisements")} />
+          <CreatePublication profileImage={user?.photoURL} onClose={() => setActiveTab("advertisements")} />
         );
       default:
         return null;

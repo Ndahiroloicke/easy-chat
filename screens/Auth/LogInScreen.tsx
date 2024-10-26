@@ -94,7 +94,11 @@ const LogInScreen: React.FC = () => {
         console.log(userData.email);
         // Store the password in local storage (only if necessary)
         await AsyncStorage.setItem('userPassword', values.password);
-        console.log("Stored password:", values.password); // Log the password for debugging
+        console.log("Stored password:", values.password);
+        
+        const userprofile = AsyncStorage.getItem("profileImage");
+        
+        console.log(userprofile)// Log the password for debugging
 
         navigation.navigate(routes.HOME);
     } catch (error: any) {

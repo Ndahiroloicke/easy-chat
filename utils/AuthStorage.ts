@@ -1,4 +1,7 @@
 import * as SecureStore from "expo-secure-store";
+import { db } from "./firebase.config";
+import { getDoc } from "firebase/firestore";
+import { doc } from "firebase/firestore";
 
 const USER_KEY = "user"; 
 
@@ -17,7 +20,24 @@ export const getUserData = async (): Promise<UserData | null> => {
   try {
     const userDataString = await SecureStore.getItemAsync(USER_KEY);
     if (userDataString) {
-      return JSON.parse(userDataString);
+      const userData = JSON.parse(userDataString);
+      
+      // If the profile picture is not in the local data, fetch it from Firestore
+      if (!userData.profilePicture) {
+        const userDocRef = doc(db, "users", userData.id); // Assuming the user's UID is stored
+        const userDoc = await getDoc(userDocRef);
+        
+        if (userDoc.exists()) {
+          const userFirestoreData = userDoc.data();
+          // Assuming profile picture URL is stored as 'profilePicture'
+          userData.profilePicture = userFirestoreData.profile;
+          
+          // Optionally, update the local storage with the new data
+          await SecureStore.setItemAsync(USER_KEY, JSON.stringify(userData));
+        }
+      }
+      
+      return userData;
     }
     return null;
   } catch (error) {

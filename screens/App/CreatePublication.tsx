@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -16,9 +16,11 @@ import { Picker } from "@react-native-picker/picker";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../../utils/firebase.config";
 import { Ionicons } from "@expo/vector-icons";
+import { getUserData } from "../../utils/AuthStorage";
 
 interface CreatePublicationProps {
   onClose: () => void;
+  profileImage: string | null | undefined;
 }
 
 const validationSchema = Yup.object().shape({
@@ -33,26 +35,37 @@ const validationSchema = Yup.object().shape({
     .required("Description is required."),
 });
 
-const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose }) => {
-  const [selectedType, setSelectedType] = useState<"offer" | "demand" | null>(
-    null
-  );
+const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileImage }) => {
+  const [selectedType, setSelectedType] = useState<"offer" | "demand" | null>(null);
   const [loading, setLoading] = useState(false);
-  const currentUser = auth.currentUser;
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  // Fetch user data when the component mounts
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const user = await getUserData();
+      if (user) {
+        setCurrentUser(user);
+        console.log(user);
+      }
+    };
+    fetchUserData();
+  }, []);
 
   const handleSubmit = async (values: any) => {
     setLoading(true);
     try {
+      // Retrieve the user's profile picture URL
+      const profilePicture = currentUser?.profilePicture; // Ensure this matches your user data structure
+
       await addDoc(collection(db, "advertisements"), {
         ...values,
-        creator: currentUser?.uid,
+        creator: currentUser?.name,
+        profilePicture, // Store the profile picture URL with the ad
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
-      ToastAndroid.show(
-        "Announcement created successfully!",
-        ToastAndroid.SHORT
-      );
+      ToastAndroid.show("Announcement created successfully!", ToastAndroid.SHORT);
       onClose();
     } catch (error: any) {
       ToastAndroid.show(`Error: ${error.message}`, ToastAndroid.LONG);
@@ -169,7 +182,7 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose }) => {
             )}
 
             <View style={styles.row}>
-              <Picker
+              <Picker 
                 selectedValue={values.city}
                 onValueChange={(itemValue: any) =>
                   setFieldValue("city", itemValue)
@@ -344,8 +357,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   submitButtonText: {
-    fontSize: 18,
     color: "#fff",
+    fontSize: 16,
   },
 });
 

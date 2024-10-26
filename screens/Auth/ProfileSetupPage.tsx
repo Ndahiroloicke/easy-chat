@@ -26,6 +26,7 @@ import { AuthScreenNavigatorProps } from "../../constants/types";
 import { getUserData, storeUserData } from "../../utils/AuthStorage";
 import { auth } from "../../utils/firebase.config";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type FormValues = {
   username: string;
@@ -90,6 +91,10 @@ const ProfileScreen: React.FC = () => {
       const blob = await response.blob();
       await uploadBytes(storageRef, blob);
       const downloadURL = await getDownloadURL(storageRef);
+      
+      // Save the profile image URL in AsyncStorage
+      await AsyncStorage.setItem('profileImage', downloadURL);
+
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         userData.email,
@@ -124,6 +129,23 @@ const ProfileScreen: React.FC = () => {
       setIsLoading(false);
     }
   };
+
+  // Function to retrieve the stored profile image URL
+  const retrieveProfileImage = async () => {
+    try {
+      const storedImage = await AsyncStorage.getItem('profileImage');
+      if (storedImage) {
+        console.log("Stored Profile Image URL:", storedImage);
+        // You can set this URL in your state or use it as needed
+      }
+    } catch (error) {
+      console.error("Error retrieving profile image:", error);
+    }
+  };
+
+  useEffect(() => {
+    retrieveProfileImage(); // Retrieve the stored profile image on component mount
+  }, []);
 
   return (
     <ScreenLayout>

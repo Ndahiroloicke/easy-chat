@@ -8,8 +8,15 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
 import { db, auth } from "../../utils/firebase.config";
+
+interface User {
+  uid: string;
+  name: string;
+  email: string;
+  profile: string; // Assuming profile is a URL string
+}
 
 interface CommunicationsProps {
   openChat: (uid: string) => void;
@@ -19,8 +26,10 @@ const Communications: React.FC<CommunicationsProps> = ({ openChat }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [myProfile, setMyProfile] = useState<User | null>(null);
   const currentUser = auth.currentUser;
 
+  // Fetch all users excluding the current user
   const fetchUsers = async (search: string = "") => {
     try {
       const usersRef = collection(db, "users");
@@ -38,7 +47,7 @@ const Communications: React.FC<CommunicationsProps> = ({ openChat }) => {
           ...doc.data(),
         }))
         .filter((user) => user.uid !== currentUser?.uid); // Exclude current user
-      setUsers(fetchedUsers as any);
+      setUsers(fetchedUsers as User[]);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -46,8 +55,26 @@ const Communications: React.FC<CommunicationsProps> = ({ openChat }) => {
     }
   };
 
+  // Fetch current user's profile
+  const fetchMyProfile = async () => {
+    if (currentUser) {
+      try {
+        const userRef = doc(db, "users", currentUser.uid);
+        const userSnapshot = await getDoc(userRef);
+        if (userSnapshot.exists()) {
+          setMyProfile({ uid: userSnapshot.id, ...userSnapshot.data() } as User);
+        } else {
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
+    fetchMyProfile();
   }, []);
 
   const handleSearch = (text: string) => {
@@ -58,7 +85,7 @@ const Communications: React.FC<CommunicationsProps> = ({ openChat }) => {
   const renderUserItem = ({ item }: { item: User }) => (
     <TouchableOpacity
       style={styles.userContainer}
-      onPress={() => openChat(item.uid as any)}
+      onPress={() => openChat(item.uid)}
     >
       <Image source={{ uri: item.profile }} style={styles.userImage} />
       <View style={styles.userInfo}>
@@ -80,11 +107,22 @@ const Communications: React.FC<CommunicationsProps> = ({ openChat }) => {
 
   return (
     <View style={styles.container}>
+      {/* Display My Profile */}
+      {myProfile && (
+        <View style={styles.myProfileContainer}>
+          <Image source={{ uri: myProfile.profile }} style={styles.myProfileImage} />
+          <View style={styles.myProfileInfo}>
+            <Text style={styles.myProfileName}>{myProfile.name}</Text>
+            <Text style={styles.myProfileEmail}>{myProfile.email}</Text>
+          </View>
+        </View>
+      )}
+      
       <FlatList
         data={loading ? Array(5).fill({}) : users}
         renderItem={loading ? renderSkeletonItem : renderUserItem}
         keyExtractor={(item, index) =>
-          loading ? index.toString() : (item.uid as any)
+          loading ? index.toString() : item.uid
         }
         contentContainerStyle={styles.listContainer}
       />
@@ -104,6 +142,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+  },
+  myProfileContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+    marginBottom: 10, // Space below the profile
+  },
+  myProfileImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 15,
+  },
+  myProfileInfo: {
+    flex: 1,
+  },
+  myProfileName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  myProfileEmail: {
+    fontSize: 14,
+    color: "#666",
   },
   listContainer: {
     paddingBottom: 20,

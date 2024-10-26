@@ -6,6 +6,7 @@ import {
   StyleSheet,
   FlatList,
   TextInput,
+  Image,
 } from "react-native";
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { db } from "../../utils/firebase.config";
@@ -21,6 +22,7 @@ interface Publication {
   distance: string;
   description: string;
   createdAt: number;
+  profilePicture: string; // Add profileImage to represent the user's profile picture
 }
 
 interface PublicationsProps {
@@ -45,6 +47,7 @@ const Publications: React.FC<PublicationsProps> = ({ openAdvertisement }) => {
         })) as Publication[];
         setPublications(fetchedPublications);
         setFilteredPublications(fetchedPublications);
+        console.log(fetchPublications)
         setLoading(false);
       });
 
@@ -71,27 +74,19 @@ const Publications: React.FC<PublicationsProps> = ({ openAdvertisement }) => {
 
   const renderPublicationItem = ({ item }: { item: Publication }) => (
     <View style={styles.publicationContainer}>
-      <View style={styles.headerContainer}>
-        <View style={styles.typeContainer}>
-          <Text style={styles.typeText}>{item.type}</Text>
-        </View>
-        <View style={styles.locationContainer}>
-          <Text style={styles.locationText}>
-            {item.city}, {item.province} - {item.distance} km
-          </Text>
-        </View>
+      {/* Profile Image */}
+      <Image source={{ uri: item.profilePicture }} style={styles.profileImage} />
+      {/* Right Content */}
+      <View style={styles.textContainer}>
+        <Text style={styles.typeText}>{item.type}</Text>
+        <Text numberOfLines={2} style={styles.descriptionText}>
+          {item.description}
+        </Text>
       </View>
-      <Text style={styles.categoryText}>
-        {item.category} / {item.subcategory}
-      </Text>
-      <Text numberOfLines={2} style={styles.descriptionText}>
-        {item.description}
-      </Text>
-      <TouchableOpacity
-        style={styles.viewMoreButton}
-        onPress={() => openAdvertisement(item.id)}
-      >
-        <Text style={styles.viewMoreText}>View more details</Text>
+  
+      {/* Icon Button */}
+      <TouchableOpacity style={styles.iconButton} onPress={() => openAdvertisement(item.id)}>
+        <Text style={styles.iconText}>🔍</Text>
       </TouchableOpacity>
     </View>
   );
@@ -144,55 +139,46 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   publicationContainer: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
-  },
-  headerContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
     marginBottom: 10,
   },
-  typeContainer: {
-    backgroundColor: "#2196F3",
-    borderRadius: 20,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
+  profileImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  textContainer: {
+    flex: 1,
   },
   typeText: {
-    fontSize: 14,
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  locationContainer: {
-    justifyContent: "center",
-  },
-  locationText: {
-    fontSize: 14,
-    color: "#555",
-  },
-  categoryText: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#333",
-    marginBottom: 5,
+    color: COLORS.primary,
+    marginBottom: 3,
   },
   descriptionText: {
     fontSize: 14,
-    color: "#666",
-    marginBottom: 10,
+    color: "#333",
   },
-  viewMoreButton: {
-    alignSelf: "flex-end",
-    marginTop: 5,
+  iconButton: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: "#e0f0ff",
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 10,
   },
-  viewMoreText: {
-    fontSize: 14,
-    color: COLORS.primary,
-    fontWeight: "bold",
+  iconText: {
+    fontSize: 16,
+    color: "#007aff",
   },
 });
 
