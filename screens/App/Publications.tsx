@@ -149,20 +149,19 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 10,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     marginRight: 10,
   },
   textContainer: {
     flex: 1,
   },
   typeText: {
-    fontSize: 25,
+    fontSize: 16,
     fontWeight: "bold",
     color: COLORS.primary,
     marginBottom: 3,
-    textTransform: 'uppercase', // Add this line for uppercase text
   },
   descriptionText: {
     fontSize: 14,
