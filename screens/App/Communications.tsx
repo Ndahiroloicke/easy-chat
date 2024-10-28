@@ -55,26 +55,8 @@ const Communications: React.FC<CommunicationsProps> = ({ openChat }) => {
     }
   };
 
-  // Fetch current user's profile
-  const fetchMyProfile = async () => {
-    if (currentUser) {
-      try {
-        const userRef = doc(db, "users", currentUser.uid);
-        const userSnapshot = await getDoc(userRef);
-        if (userSnapshot.exists()) {
-          setMyProfile({ uid: userSnapshot.id, ...userSnapshot.data() } as User);
-        } else {
-          console.log("No such document!");
-        }
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-      }
-    }
-  };
-
   useEffect(() => {
     fetchUsers();
-    fetchMyProfile();
   }, []);
 
   const handleSearch = (text: string) => {
@@ -107,16 +89,6 @@ const Communications: React.FC<CommunicationsProps> = ({ openChat }) => {
 
   return (
     <View style={styles.container}>
-      {/* Display My Profile */}
-      {myProfile && (
-        <View style={styles.myProfileContainer}>
-          <Image source={{ uri: myProfile.profile }} style={styles.myProfileImage} />
-          <View style={styles.myProfileInfo}>
-            <Text style={styles.myProfileName}>{myProfile.name}</Text>
-            <Text style={styles.myProfileEmail}>{myProfile.email}</Text>
-          </View>
-        </View>
-      )}
       
       <FlatList
         data={loading ? Array(5).fill({}) : users}

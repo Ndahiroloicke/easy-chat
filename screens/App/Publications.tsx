@@ -78,15 +78,15 @@ const Publications: React.FC<PublicationsProps> = ({ openAdvertisement }) => {
       <Image source={{ uri: item.profilePicture }} style={styles.profileImage} />
       {/* Right Content */}
       <View style={styles.textContainer}>
-        <Text style={styles.typeText}>{item.type}</Text>
-        <Text numberOfLines={2} style={styles.descriptionText}>
+        {/* <Text style={styles.typeText}>{item.type}</Text> */}
+        <Text numberOfLines={4} style={styles.descriptionText}>
           {item.description}
         </Text>
       </View>
   
       {/* Icon Button */}
       <TouchableOpacity style={styles.iconButton} onPress={() => openAdvertisement(item.id)}>
-        <Text style={styles.iconText}>🔍</Text>
+        <Text style={styles.iconText}>➡️</Text>
       </TouchableOpacity>
     </View>
   );
@@ -149,9 +149,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   profileImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 100,
+    height: 100,
+    borderRadius: 5,
     marginRight: 10,
   },
   textContainer: {

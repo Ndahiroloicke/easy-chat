@@ -71,7 +71,7 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
       if (userId) {
         try {
           const userRef = doc(db, "users", userId);
-          const userSnapshot = await getDoc(userRef);
+          const userSnapshot = await getDoc(userRef); 
           if (userSnapshot.exists()) {
             setUser(userSnapshot.data() as User);
           }
@@ -133,6 +133,7 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
     createChatIfNotExists();
     fetchMessages();
   }, [userId, chatId, currentUserId]);
+  
 
   const sendMessage = async () => {
     if (messageText.trim() && chatId) {
@@ -152,7 +153,8 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
 
   const renderMessageItem = ({ item }: { item: Message }) => {
     const isCurrentUserSender = item.senderId === currentUserId;
-
+    const profileImage = isCurrentUserSender ? currentUser?.profile : user?.profile;
+  
     return (
       <View
         style={[
@@ -160,15 +162,11 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
           isCurrentUserSender ? styles.myMessage : styles.otherMessage,
         ]}
       >
-        <Image
-          source={{
-            uri:
-              item.senderId === currentUserId
-                ? currentUser?.profile
-                : user?.profile,
-          }}
-          style={styles.senderImage}
-        />
+        {/* Show the profile image of the sender of each message */}
+        {!isCurrentUserSender && (
+          <Image source={{ uri: user?.profile }} style={styles.senderImage} />
+        )}
+  
         <View
           style={[
             styles.messageContent,
@@ -184,6 +182,10 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
             {item.content}
           </Text>
         </View>
+  
+        {isCurrentUserSender && (
+          <Image source={{ uri: currentUser?.profile }} style={styles.senderImage} />
+        )}
       </View>
     );
   };
@@ -194,7 +196,7 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
         <TouchableOpacity onPress={onBack}>
           <MaterialIcons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
-        {user && <Text style={styles.headerTitle}>{user.name}</Text>}
+        {user && <Text style={styles.headerTitle}>{user?.name}</Text>}
       </View>
       <FlatList
         data={messages}

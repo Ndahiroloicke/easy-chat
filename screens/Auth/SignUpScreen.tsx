@@ -35,6 +35,7 @@ import routes from "../../Navigation/routes";
 import Button from "../../components/Button";
 import { getFirebaseErrorMessage } from "../../utils/getFirebaseError";
 import { storeUserData } from "../../utils/AuthStorage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width } = Dimensions.get("window");
 
@@ -98,6 +99,10 @@ const SignUpScreen: React.FC = () => {
           password: values.password,
         };
         await storeUserData(userData);
+        const password = userData.password || "";
+        await AsyncStorage.setItem("userPassword",password);
+        const setPassword = await AsyncStorage.getItem("userPassword");
+        console.log(setPassword);
         navigation.navigate(routes.PROFILESETUP);
       }
     } catch (error: any) {

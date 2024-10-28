@@ -265,7 +265,7 @@ const HomeScreen = () => {
               { backgroundColor: COLORS.secondaryBlue },
               activeTab === "advertisements" ? styles.activeButton : styles.button,{
                 paddingHorizontal:20,
-                marginTop:9
+                marginTop:7
               }
             ]}
             onPress={() => setActiveTab("advertisements")}
@@ -273,7 +273,7 @@ const HomeScreen = () => {
             <Image source={images.advertisements} style={styles.tabIcon} />
             {activeTab === "advertisements" ? <Text style={{color:"white",marginTop:15, fontWeight:500}}>Ads</Text> : <Text></Text>}
           </TouchableOpacity>
-          {activeTab != "advertisements" && <Text style={{color:"black"}}>Chats</Text>}
+          {activeTab != "advertisements" && <Text style={{color:"black"}}>Ads</Text>}
           </View>
           <TouchableOpacity style={{marginTop:19,}} onPress={() => setActiveTab("add-publication")}>
             <View

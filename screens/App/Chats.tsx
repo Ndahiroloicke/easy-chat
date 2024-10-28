@@ -96,6 +96,7 @@ const Chats: React.FC<ChatsProps> = ({ openChat }) => {
         }, {} as { [key: string]: User });
 
         setUsers(userMap);
+        console.log(users)
         setChats(fetchedChats);
         setFilteredChats(fetchedChats);
         setLoading(false);

@@ -56,7 +56,7 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileI
     setLoading(true);
     try {
       // Retrieve the user's profile picture URL
-      const profilePicture = currentUser?.profilePicture; // Ensure this matches your user data structure
+      const profilePicture = currentUser?.profile; // Ensure this matches your user data structure
 
       await addDoc(collection(db, "advertisements"), {
         ...values,

@@ -12,5 +12,5 @@ interface User {
 interface UserData extends User {
   authToken?: string;
   refreshToken?: string;
-  password?: string;
+  password?: string ;
 }
