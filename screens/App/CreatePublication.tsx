@@ -108,7 +108,6 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileI
           touched,
         }) => (
           <View style={styles.form}>
-            <Text style={styles.title}>Are you offering or demanding?</Text>
             <View style={styles.typeContainer}>
               <TouchableOpacity
                 style={[
@@ -152,21 +151,17 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileI
             {touched.type && errors.type && (
               <Text style={styles.errorText}>{errors.type}</Text>
             )}
-
-            <Text style={styles.title}>
-              What type of agreement or business do you want to do?
-            </Text>
             <Picker
-              selectedValue={values.category}
-              onValueChange={(itemValue: any) =>
-                setFieldValue("category", itemValue)
-              }
-              style={styles.picker}
-            >
-              <Picker.Item label="Select Category" value="" />
-              <Picker.Item label="Category 1" value="category1" />
-              <Picker.Item label="Category 2" value="category2" />
-            </Picker>
+  selectedValue={values.category}
+  onValueChange={(itemValue: any) =>
+    setFieldValue("category", itemValue)
+  }
+  style={styles.picker}
+>
+  <Picker.Item label="Select Category" value="" />
+  <Picker.Item label="Category 1" value="category1" />
+  <Picker.Item label="Category 2" value="category2" />
+</Picker>
             {touched.category && errors.category && (
               <Text style={styles.errorText}>{errors.category}</Text>
             )}

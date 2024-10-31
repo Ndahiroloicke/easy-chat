@@ -23,6 +23,7 @@ import {
 import { auth, db } from "../../utils/firebase.config";
 import { MaterialIcons } from "@expo/vector-icons";
 import { getUserData } from "../../utils/AuthStorage";
+import { COLORS } from "../../constants";
 
 interface User {
   id: string;
@@ -53,7 +54,7 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
   const [user, setUser] = useState<User | null>(null);
   const [chatId, setChatId] = useState<string | null>(existingChatId || null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const currentUserId = auth.currentUser?.uid;
+
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -61,12 +62,18 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
         const userData = await getUserData();
         if (userData) {
           setCurrentUser(userData as User);
+          console.log(currentUser);
+          console
         }
       } catch (error) {
         console.error("Failed to fetch current user:", error);
       }
     };
+    fetchCurrentUser();
+  }, []);
+  const currentUserId = currentUser?.id
 
+  useEffect(() => {
     const fetchUser = async () => {
       if (userId) {
         try {
@@ -128,7 +135,6 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
       }
     };
 
-    fetchCurrentUser();
     fetchUser();
     createChatIfNotExists();
     fetchMessages();
@@ -152,9 +158,7 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
   };
 
   const renderMessageItem = ({ item }: { item: Message }) => {
-    const isCurrentUserSender = item.senderId === currentUserId;
-    const profileImage = isCurrentUserSender ? currentUser?.profile : user?.profile;
-  
+    const isCurrentUserSender = item.senderId === currentUserId;  
     return (
       <View
         style={[
@@ -182,10 +186,11 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
             {item.content}
           </Text>
         </View>
-  
+
         {isCurrentUserSender && (
-          <Image source={{ uri: currentUser?.profile }} style={styles.senderImage} />
+          <Image source={{ uri: currentUser?.profilePicture }} style={styles.senderImage} />
         )}
+
       </View>
     );
   };
@@ -196,6 +201,7 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
         <TouchableOpacity onPress={onBack}>
           <MaterialIcons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
+        {user && <Image source={{ uri: user.profile }} style={styles.senderImage} />}
         {user && <Text style={styles.headerTitle}>{user?.name}</Text>}
       </View>
       <FlatList
@@ -204,6 +210,22 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.messagesList}
       />
+
+<View style={styles.iconRow}>
+        <TouchableOpacity style={styles.iconButton}>
+          <MaterialIcons name="group" size={24} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.iconButton}>
+          <MaterialIcons name="bar-chart" size={24} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.iconButton}>
+          <MaterialIcons name="account-circle" size={24} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.iconButton}>
+          <MaterialIcons name="history" size={24} color="#000" />
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -234,8 +256,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    marginLeft: 10,
-  },
+    },
   messagesList: {
     flexGrow: 1,
     padding: 10,
@@ -256,6 +277,19 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     marginRight: 10,
+    marginLeft:10,
+  },
+  iconRow: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+  iconButton: {
+    padding: 10,
+    backgroundColor:"#EBF1FD",
+    borderRadius:10
   },
   messageContent: {
     maxWidth: "75%",
