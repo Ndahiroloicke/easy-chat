@@ -42,21 +42,26 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileI
 
   // Fetch user data when the component mounts
   useEffect(() => {
-    const fetchUserData = async () => {
-      const user = await getUserData();
-      if (user) {
-        setCurrentUser(user);
-        console.log(user);
+    const fetchCurrentUser = async () => {
+      try {
+        const userData = await getUserData();
+        if (userData) {
+          setCurrentUser(userData as User);
+          console.log(currentUser);
+        }
+      } catch (error) {
+        console.error("Failed to fetch current user:", error);
       }
     };
-    fetchUserData();
+    fetchCurrentUser();
   }, []);
 
   const handleSubmit = async (values: any) => {
     setLoading(true);
     try {
       // Retrieve the user's profile picture URL
-      const profilePicture = currentUser?.profile; // Ensure this matches your user data structure
+      const profilePicture = currentUser?.profilePicture; 
+      console.log(profileImage)// Ensure this matches your user data structure
 
       await addDoc(collection(db, "advertisements"), {
         ...values,

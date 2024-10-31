@@ -21,16 +21,19 @@ export const getUserData = async (): Promise<UserData | null> => {
     const userDataString = await SecureStore.getItemAsync(USER_KEY);
     if (userDataString) {
       const userData = JSON.parse(userDataString);
+      console.log(userData)
       
       // If the profile picture is not in the local data, fetch it from Firestore
       if (!userData.profilePicture) {
-        const userDocRef = doc(db, "users", userData.name); // Assuming the user's UID is stored
+        const userDocRef = doc(db, "users", userData.id); // Assuming the user's UID is stored
         const userDoc = await getDoc(userDocRef);
         
         if (userDoc.exists()) {
           const userFirestoreData = userDoc.data();
           // Assuming profile picture URL is stored as 'profilePicture'
           userData.profilePicture = userFirestoreData.profile;
+          
+          console.log("fetched profile is", userData.profilePicture)
           
           // Optionally, update the local storage with the new data
           await SecureStore.setItemAsync(USER_KEY, JSON.stringify(userData));

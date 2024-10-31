@@ -1,185 +1,152 @@
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-  TextInput,
-  Image,
-} from "react-native";
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
-import { db } from "../../utils/firebase.config";
-import { COLORS } from "../../constants";
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, TextInput } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 
-interface Publication {
-  id: string;
-  type: string;
-  category: string;
-  subcategory: string;
-  city: string;
-  province: string;
-  distance: string;
-  description: string;
-  createdAt: number;
-  profilePicture: string; // Add profileImage to represent the user's profile picture
-}
+const SearchForm = () => {
+  const [category, setCategory] = useState("");
+  const [subcategory, setSubcategory] = useState("");
+  const [location, setLocation] = useState("");
+  const [priceFrom, setPriceFrom] = useState("");
+  const [priceTo, setPriceTo] = useState("");
+  const [userType, setUserType] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
 
-interface PublicationsProps {
-  openAdvertisement: (id: string) => void;
-}
-
-const Publications: React.FC<PublicationsProps> = ({ openAdvertisement }) => {
-  const [publications, setPublications] = useState<Publication[]>([]);
-  const [filteredPublications, setFilteredPublications] = useState<Publication[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [searchQuery, setSearchQuery] = useState<string>("");
-
-  useEffect(() => {
-    const fetchPublications = async () => {
-      const publicationsRef = collection(db, "advertisements");
-      const q = query(publicationsRef, orderBy("createdAt", "desc"));
-
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const fetchedPublications = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Publication[];
-        setPublications(fetchedPublications);
-        setFilteredPublications(fetchedPublications);
-        console.log(fetchPublications)
-        setLoading(false);
-      });
-
-      return () => unsubscribe();
-    };
-
-    fetchPublications();
-  }, []);
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-
-    if (query.trim() === "") {
-      setFilteredPublications(publications);
-      return;
-    }
-
-    const filtered = publications.filter((publication) =>
-      publication.type.toLowerCase().includes(query.toLowerCase())
-    );
-
-    setFilteredPublications(filtered);
+  const handleSearch = () => {
+    // Handle search logic here
+    console.log("Search initiated with selected filters");
   };
-
-  const renderPublicationItem = ({ item }: { item: Publication }) => (
-    <View style={styles.publicationContainer}>
-      {/* Profile Image */}
-      <Image source={{ uri: item.profilePicture }} style={styles.profileImage} />
-      {/* Right Content */}
-      <View style={styles.textContainer}>
-        {/* <Text style={styles.typeText}>{item.type}</Text> */}
-        <Text numberOfLines={4} style={styles.descriptionText}>
-          {item.description}
-        </Text>
-      </View>
-  
-      {/* Icon Button */}
-      <TouchableOpacity style={styles.iconButton} onPress={() => openAdvertisement(item.id)}>
-        <Text style={styles.iconText}>➡️</Text>
-      </TouchableOpacity>
-    </View>
-  );
 
   return (
     <View style={styles.container}>
-      {loading ? (
-        <Text style={styles.loadingText}>Loading publications...</Text>
-      ) : (
-        <>
-          <FlatList
-            data={filteredPublications}
-            renderItem={renderPublicationItem}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.listContent}
-          />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search by type (e.g., offer, demand)"
-            value={searchQuery}
-            onChangeText={handleSearch}
-          />
-        </>
-      )}
+      {/* Header Section */}
+      <TouchableOpacity style={styles.header}>
+        <Text style={styles.headerText}>Búsqueda Según Categoría</Text>
+      </TouchableOpacity>
+
+      {/* Dropdown Fields */}
+      <Picker
+        selectedValue={category}
+        onValueChange={(value) => setCategory(value)}
+        style={styles.dropdown}
+      >
+        <Picker.Item label="Inmobiliaria" value="inmobiliaria" />
+        {/* Other categories can be added here */}
+      </Picker>
+
+      <View style={styles.row}>
+        <Picker
+          selectedValue={subcategory}
+          onValueChange={(value) => setSubcategory(value)}
+          style={styles.dropdownHalf}
+        >
+          <Picker.Item label="Subcategoría" value="subcategory" />
+          {/* Add subcategories here */}
+        </Picker>
+
+        <TextInput
+          style={styles.dropdownHalf}
+          placeholder="Toda España"
+          value={location}
+          onChangeText={setLocation}
+        />
+      </View>
+
+      <View style={styles.row}>
+        <Picker
+          selectedValue={priceFrom}
+          onValueChange={(value) => setPriceFrom(value)}
+          style={styles.dropdownHalf}
+        >
+          <Picker.Item label="Desde €" value="price_from" />
+          {/* Add price options here */}
+        </Picker>
+
+        <Picker
+          selectedValue={priceTo}
+          onValueChange={(value) => setPriceTo(value)}
+          style={styles.dropdownHalf}
+        >
+          <Picker.Item label="Hasta €" value="price_to" />
+          {/* Add price options here */}
+        </Picker>
+      </View>
+
+      <Picker
+        selectedValue={userType}
+        onValueChange={(value) => setUserType(value)}
+        style={styles.dropdown}
+      >
+        <Picker.Item label="Particular-Profesional" value="user_type" />
+        {/* Add user types here */}
+      </Picker>
+
+      <TextInput
+        style={styles.dropdown}
+        placeholder="Ordenar por relevancia"
+        value={sortOrder}
+        onChangeText={setSortOrder}
+      />
+
+      {/* Search Button */}
+      <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
+        <Text style={styles.searchButtonText}>Iniciar Búsqueda</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#f9f9f9",
-    padding: 10,
+    backgroundColor: "#E0F0FF",
+    padding: 16,
+    borderRadius: 8,
   },
-  searchInput: {
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 20,
-    backgroundColor: COLORS.white,
-    marginTop: 10,
-  },
-  loadingText: {
-    textAlign: "center",
-    marginTop: 20,
-    fontSize: 16,
-    color: "#999",
-  },
-  listContent: {
-    paddingBottom: 10,
-  },
-  publicationContainer: {
-    flexDirection: "row",
+  header: {
+    backgroundColor: "#58A9FF",
+    borderRadius: 8,
+    paddingVertical: 12,
     alignItems: "center",
-    padding: 10,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    marginBottom: 10,
+    marginBottom: 12,
   },
-  profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 5,
-    marginRight: 10,
-  },
-  textContainer: {
-    flex: 1,
-  },
-  typeText: {
+  headerText: {
+    color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
-    color: COLORS.primary,
-    marginBottom: 3,
   },
-  descriptionText: {
-    fontSize: 14,
-    color: "#333",
+  dropdown: {
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    height: 50,
+    marginVertical: 6,
+    paddingHorizontal: 10,
   },
-  iconButton: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: "#e0f0ff",
-    justifyContent: "center",
+  dropdownHalf: {
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    height: 50,
+    width: "48%",
+    paddingHorizontal: 10,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  searchButton: {
+    backgroundColor: "#58A9FF",
+    borderRadius: 8,
+    paddingVertical: 12,
     alignItems: "center",
-    marginLeft: 10,
+    marginTop: 12,
   },
-  iconText: {
+  searchButtonText: {
+    color: "#fff",
     fontSize: 16,
-    color: "#007aff",
+    fontWeight: "bold",
   },
 });
 
-export default Publications;
+export default SearchForm;
