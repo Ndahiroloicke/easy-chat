@@ -109,6 +109,7 @@ const ProfileScreen: React.FC = () => {
         username: values.username,
         profile: downloadURL,
       });
+      console.log("the user id is :" + user.uid);
       const authToken = await user.getIdToken();
       const refreshToken = await user.getIdToken(true);
       await storeUserData({

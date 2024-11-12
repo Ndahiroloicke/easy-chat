@@ -25,7 +25,7 @@ export const getUserData = async (): Promise<UserData | null> => {
       
       // If the profile picture is not in the local data, fetch it from Firestore
       if (!userData.profilePicture) {
-        const userDocRef = doc(db, "users", userData.id); // Assuming the user's UID is stored
+        const userDocRef = doc(db, "users", userData.name); // Assuming the user's UID is stored
         const userDoc = await getDoc(userDocRef);
         
         if (userDoc.exists()) {
