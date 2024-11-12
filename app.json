@@ -1,37 +1,13 @@
 {
   "expo": {
-    "name": "EsyChat",
-    "slug": "EsyChat",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/logo.png",
-    "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "assetBundlePatterns": ["**/*"],
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.web.app",
-      "versionCode": 1
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "plugins": ["expo-font",
-    [
-      "expo-camera",
-      {
-        "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
+    "extra": {
+      "eas": {
+        "projectId": "936375dc-9e9b-4b14-8fb1-eded2487da1d"
       }
-    ]]
+    },
+    "owner": "loic6",
+    "android": {
+      "package": "com.loic6.esychat"
+    }
   }
 }

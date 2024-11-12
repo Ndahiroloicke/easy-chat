@@ -25,7 +25,8 @@ const MenuModal: React.FC<MenuModalProps> = ({ visible, onClose }) => {
 
   const handlePress = (name: string) => {
     if (name === 'Sign out') {
-      AsyncStorage.removeItem("userPassword")
+      AsyncStorage.removeItem("userPassword");
+      AsyncStorage.removeItem("profileImage");
       navigation.navigate(routes.LOGIN);
     }
     console.log(`${name} clicked`);
