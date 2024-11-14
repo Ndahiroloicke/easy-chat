@@ -19,6 +19,7 @@ import { auth } from "./utils/firebase.config";
 import Toast from "react-native-toast-message";
 import { getUserData } from "./utils/AuthStorage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import RootNavigator from "./Navigation/RootNavigator";
 
 export default function App() {
   const [fontsLoaded] = useFonts(FONTS);
@@ -73,7 +74,7 @@ export default function App() {
     <ThemeProvider>
       <SafeAreaProvider onLayout={onLayoutRootView}>
         <NavigationContainer>
-          {user ? <AppNavigator /> : <AuthNavigator />}
+          <RootNavigator />
         </NavigationContainer>
       </SafeAreaProvider>
       <Toast />

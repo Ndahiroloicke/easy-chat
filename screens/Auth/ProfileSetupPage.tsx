@@ -38,6 +38,22 @@ const validationSchema = Yup.object().shape({
   profile: Yup.string().required("Profile image is required"),
 });
 
+interface UserData {
+  id?: string;
+  name: string;
+  email: string;
+  sex: string;
+  age: string;
+  password?: string;
+  username?: string;
+  profile?: string;
+  authToken?: string;
+  refreshToken?: string;
+  isProfileComplete?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 const ProfileScreen: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [initialValues, setInitialValues] = useState<FormValues>({
@@ -63,69 +79,87 @@ const ProfileScreen: React.FC = () => {
   const handleImagePicker = async (
     setFieldValue: (field: string, value: any) => void
   ) => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+    try {
+      // Request permissions first
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (!permissionResult.granted) {
+        ToastAndroid.show("Permission to access gallery was denied", ToastAndroid.LONG);
+        return;
+      }
 
-    if (!result.canceled) {
-      setFieldValue("profile", result.assets[0].uri);
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1], // Changed to 1:1 for profile picture
+        quality: 0.8,    // Slightly reduced quality for better performance
+      });
+
+      if (!result.canceled && result.assets && result.assets[0]) {
+        const selectedImage = result.assets[0];
+        console.log("Selected image:", selectedImage.uri); // Debug log
+        setFieldValue("profile", selectedImage.uri);
+        ToastAndroid.show("Image selected successfully", ToastAndroid.SHORT);
+      }
+    } catch (error) {
+      console.error("Error picking image:", error);
+      ToastAndroid.show("Error selecting image", ToastAndroid.LONG);
     }
   };
 
   const handleSubmit = async (values: FormValues) => {
     setIsLoading(true);
     try {
+      // 1. Get stored user data
       const userData = await getUserData();
-      if (!userData) {
-        console.log("No user data");
-        navigation.navigate(routes.REGISTER);
+      if (!userData || !userData.id) {
+        ToastAndroid.show("Missing user data. Please sign up again.", ToastAndroid.LONG);
+        navigation.navigate("SignUp");
         return;
       }
-      const profileImageUri = values.profile;
-      const profileImageName = `profile_${userData.id}`;
-      const storageRef = ref(storage, `profile_images/${profileImageName}`);
-      const response = await fetch(profileImageUri);
-      const blob = await response.blob();
-      await uploadBytes(storageRef, blob);
-      const downloadURL = await getDownloadURL(storageRef);
-      
-      // Save the profile image URL in AsyncStorage
+
+      // 2. Upload profile image
+      let downloadURL = '';
+      if (values.profile) {
+        const profileImageName = `profile_${userData.id}`;
+        const storageRef = ref(storage, `profile_images/${profileImageName}`);
+        const response = await fetch(values.profile);
+        const blob = await response.blob();
+        await uploadBytes(storageRef, blob);
+        downloadURL = await getDownloadURL(storageRef);
+      }
+
+      // 3. Update user document in Firestore
+      await updateDoc(doc(db, "users", userData.id), {
+        username: values.username,
+        profile: downloadURL,
+        isProfileComplete: true,
+        updatedAt: new Date().toISOString()
+      });
+
+      // 4. Update stored user data
+      const updatedUserData = {
+        ...userData,
+        username: values.username,
+        profile: downloadURL,
+        isProfileComplete: true
+      };
+      await storeUserData(updatedUserData);
       await AsyncStorage.setItem('profileImage', downloadURL);
 
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        userData.email,
-        userData.password as any
-      );
-      const user = userCredential.user;
-      await setDoc(doc(db, "users", user.uid), {
-        name: userData.name,
-        email: userData.email,
-        sex: userData.sex,
-        age: userData.age,
-        username: values.username,
-        profile: downloadURL,
+      // 5. Navigate to main app
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'App' }],
       });
-      console.log("the user id is :" + user.uid);
-      const authToken = await user.getIdToken();
-      const refreshToken = await user.getIdToken(true);
-      await storeUserData({
-        authToken,
-        refreshToken,
-        name: userData.name,
-        email: userData.email,
-        sex: userData.sex,
-        age: userData.age,
-        username: values.username,
-        profile: downloadURL,
-      } as any);
-      ToastAndroid.show("Profile updated successfully", ToastAndroid.LONG);
+
+      ToastAndroid.show("Profile setup complete!", ToastAndroid.SHORT);
     } catch (error: any) {
-      ToastAndroid.show(error.message, ToastAndroid.LONG);
-      console.error("Error updating profile:", error.message);
+      console.error("Error in profile setup:", error);
+      ToastAndroid.show(
+        error.message || "Error setting up profile",
+        ToastAndroid.LONG
+      );
     } finally {
       setIsLoading(false);
     }
@@ -169,6 +203,7 @@ const ProfileScreen: React.FC = () => {
               enableReinitialize
               validationSchema={validationSchema}
               onSubmit={(values, { setSubmitting }) => {
+                console.log("Form values on submit:", values); // Debug log
                 handleSubmit(values);
                 setSubmitting(false);
               }}
@@ -190,6 +225,7 @@ const ProfileScreen: React.FC = () => {
                       <Image
                         source={{ uri: values.profile }}
                         style={styles.profile}
+                        onError={(e) => console.log("Image loading error:", e.nativeEvent.error)} // Debug log
                       />
                     ) : (
                       <MaterialCommunityIcons
@@ -286,9 +322,10 @@ const styles = StyleSheet.create({
     height: 150,
   },
   profile: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: "100%",
+    height: "190%",
+    borderRadius: 75, // Half of the container width/height
+    resizeMode: 'cover',
   },
   inputContainer: {
     flexDirection: "row",

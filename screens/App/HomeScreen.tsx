@@ -30,18 +30,11 @@ const HomeScreen = () => {
   };
   const [loading, setLoading] = useState(true);
   const [hasChats, setHasChats] = useState(false);
-  const [chatId, setChatId] = useState<string | undefined>();
-  const [userId, setUserId] = useState<string | undefined>();
+  const [chatId, setChatId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [advertisementId, setAdvertisementId] = useState<string | undefined>();
   const [currentUser, setCurrentUser] = useState<User>();
-  const [activeTab, setActiveTab] = useState<
-    | "communication"
-    | "chats"
-    | "achat"
-    | "advertisements"
-    | "add-publication"
-    | "anadvertisement"
-  >("communication");
+  const [activeTab, setActiveTab] = useState("communication");
 
   const user = auth.currentUser;
   useEffect(() => {
@@ -83,78 +76,27 @@ const HomeScreen = () => {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
-  // if (!hasChats) {
-  //   return (
-  //     <View style={styles.setupContainer}>
-  //       <View style={styles.titleContainer}>
-  //         <Image source={images.logo} style={styles.logo} />
-  //         <Text style={[styles.title, styles.titleYellow]}>Esy</Text>
-  //         <Text style={[styles.title, styles.titleBlue]}>Chat</Text>
-  //       </View>
-  //       <View style={styles.buttonGrid}>
-  //         <TouchableOpacity
-  //           style={styles.button}
-  //           onPress={() => {
-  //             setHasChats(true);
-  //             setActiveTab("advertisements");
-  //           }}
-  //         >
-  //           <Image
-  //             source={images.advertisements}
-  //             style={styles.setupButtonLogo}
-  //           />
-  //           <Text style={styles.buttonText}>Publications</Text>
-  //         </TouchableOpacity>
-  //         <TouchableOpacity
-  //           style={styles.button}
-  //           onPress={() => {
-  //             setHasChats(true);
-  //             setActiveTab("communication");
-  //           }}
-  //         >
-  //           <Image
-  //             source={images.communication}
-  //             style={styles.setupButtonLogo}
-  //           />
-  //           <Text style={styles.buttonText}>Communication</Text>
-  //         </TouchableOpacity>
-  //         <TouchableOpacity
-  //           style={styles.button}
-  //           onPress={() => {
-  //             setHasChats(true);
-  //             setActiveTab("chats");
-  //           }}
-  //         >
-  //           <Image source={images.chats} style={styles.setupButtonLogo} />
-  //           <Text style={styles.buttonText}>Chats</Text>
-  //         </TouchableOpacity>
-  //       </View>
-  //       <View style={styles.configButtonContainer}>
-  //         <TouchableOpacity style={styles.configButton}>
-  //           <Image source={images.config} style={styles.configIcon} />
-  //           <Text style={styles.configText}>Configurations</Text>
-  //         </TouchableOpacity>
-  //       </View>
-  //     </View>
-  //   );
-  // }
+  const handleOpenChat = (newChatId: string, newUserId?: string) => {
+    console.log("Opening chat with ID:", newChatId, "and userId:", newUserId);
+    setChatId(newChatId);
+    setUserId(newUserId || null);
+    setActiveTab("achat");
+  };
 
   const renderContent = () => {
     switch (activeTab) {
       case "communication":
         return (
           <Communications
-            openChat={(userId: string) => {
-              setUserId(userId);
-              setActiveTab("achat");
-            }}
+            openChat={handleOpenChat}
           />
         );
       case "chats":
         return (
           <Chats
-            openChat={(chatId) => {
-              setChatId(chatId);
+            openChat={(chatId?: string, userId?: string) => {
+              setChatId(chatId || null);
+              setUserId(userId || null);
               setActiveTab("achat");
             }}
           />
@@ -162,9 +104,13 @@ const HomeScreen = () => {
       case "achat":
         return (
           <ChatConversation
-            userId={userId}
             chatId={chatId}
-            onBack={() => setActiveTab("chats")}
+            userId={userId || undefined}
+            onBack={() => {
+              setUserId(null);
+              setChatId(null);
+              setActiveTab(chatId ? "chats" : "communication");
+            }}
           />
         );
       case "advertisements":

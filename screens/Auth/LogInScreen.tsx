@@ -64,13 +64,18 @@ const LogInScreen: React.FC = () => {
   const handleSubmit = async (values: FormValues) => {
     setIsLoading(true);
     try {
+        console.log("Starting login process...");
         const userCredential = await signInWithEmailAndPassword(
             auth,
             values.email,
             values.password
         );
+        console.log("Login successful, user:", userCredential.user.uid);
+        
         const user = userCredential.user;
         const authToken = await user.getIdToken();
+        console.log("Got auth token");
+        
         const refreshToken = await user.getIdToken(true);
         const userDocRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userDocRef);
@@ -100,10 +105,13 @@ const LogInScreen: React.FC = () => {
         
         console.log(userprofile)// Log the password for debugging
 
-        navigation.navigate(routes.HOME);
+        // Before navigation, verify auth state
+        console.log("Final auth check:", auth.currentUser?.uid);
+        
+        navigation.navigate("App", { screen: "Home" });
     } catch (error: any) {
+        console.error("Login error:", error);
         ToastAndroid.show(getFirebaseErrorMessage(error.code), ToastAndroid.LONG);
-        console.error("Error logging in:", error.message);
     } finally {
         setIsLoading(false);
     }

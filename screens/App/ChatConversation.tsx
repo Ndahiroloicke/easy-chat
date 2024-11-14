@@ -19,6 +19,9 @@ import {
   onSnapshot,
   getDoc,
   Timestamp,
+  serverTimestamp,
+  updateDoc,
+  increment,
 } from "firebase/firestore";
 import { auth, db } from "../../utils/firebase.config";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -32,8 +35,8 @@ interface User {
 }
 
 interface ChatConversationProps {
-  userId?: string;
   chatId?: string;
+  userId?: string;
   onBack: () => void;
 }
 
@@ -44,15 +47,11 @@ interface Message {
   timestamp: Timestamp;
 }
 
-const ChatConversation: React.FC<ChatConversationProps> = ({
-  userId,
-  chatId: existingChatId,
-  onBack,
-}) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+const ChatConversation: React.FC<ChatConversationProps> = ({ chatId: initialChatId, userId, onBack }) => {
+  const [messages, setMessages] = useState<any[]>([]);
   const [messageText, setMessageText] = useState<string>("");
   const [user, setUser] = useState<User | null>(null);
-  const [chatId, setChatId] = useState<string | null>(existingChatId || null);
+  const [chatId, setChatId] = useState<string | null>(initialChatId || null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
 
@@ -62,8 +61,6 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
         const userData = await getUserData();
         if (userData) {
           setCurrentUser(userData as User);
-          console.log(currentUser);
-          console
         }
       } catch (error) {
         console.error("Failed to fetch current user:", error);
@@ -71,7 +68,6 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
     };
     fetchCurrentUser();
   }, []);
-  const currentUserId = currentUser?.id
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -88,7 +84,7 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
       }
     };
 
-    const fetchMessages = () => {
+    const fetchMessages = (chatId: string | null) => {
       if (chatId) {
         try {
           const chatRef = collection(db, "chats", chatId, "messages");
@@ -99,6 +95,7 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
               ...doc.data(),
             })) as Message[];
             setMessages(fetchedMessages);
+            console.log(messages);
           });
         } catch (error) {
           console.error("Failed to fetch messages:", error);
@@ -107,12 +104,12 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
     };
 
     const createChatIfNotExists = async () => {
-      if (!chatId && userId) {
+      if (!chatId && userId && auth.currentUser) {
         try {
           const chatsRef = collection(db, "chats");
           const q = query(
             chatsRef,
-            where("participants", "array-contains", currentUserId)
+            where("participants", "array-contains", auth.currentUser.uid)
           );
           const chatSnapshot = await getDocs(q);
 
@@ -122,7 +119,7 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
 
           if (!chat) {
             const newChatRef = await addDoc(chatsRef, {
-              participants: [currentUserId, userId],
+              participants: [auth.currentUser.uid, userId],
               createdAt: Timestamp.now(),
             });
             setChatId(newChatRef.id);
@@ -134,31 +131,58 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
         }
       }
     };
-
     fetchUser();
     createChatIfNotExists();
-    fetchMessages();
-  }, [userId, chatId, currentUserId]);
+    console.log(auth.currentUser?.displayName);
+    fetchMessages(chatId);
+    console.log(chatId);
+  }, [userId, chatId]);
   
 
+  useEffect(() => {
+    if (chatId && currentUser) {
+      // Mark messages as read
+      const chatRef = doc(db, "chats", chatId);
+      updateDoc(chatRef, {
+        [`lastReadBy.${currentUser.uid}`]: Timestamp.now(),
+        // Reset unread count for current user
+        unreadCount: 0
+      });
+    }
+  }, [chatId, currentUser]);
+
   const sendMessage = async () => {
-    if (messageText.trim() && chatId) {
-      try {
-        const chatRef = collection(db, "chats", chatId, "messages");
-        await addDoc(chatRef, {
-          senderId: currentUserId,
-          content: messageText,
-          timestamp: Timestamp.now(),
-        });
-        setMessageText("");
-      } catch (error) {
-        console.error("Failed to send message:", error);
-      }
+    if (!messageText?.trim() || !chatId || !auth.currentUser) return;
+
+    try {
+      const chatRef = collection(db, "chats", chatId, "messages");
+      await addDoc(chatRef, {
+        senderId: auth.currentUser.uid,
+        content: messageText.trim(),
+        timestamp: Timestamp.now(),
+      });
+
+      // Get the recipient's ID (the other participant)
+      const chatDoc = await getDoc(doc(db, "chats", chatId));
+      const participants = chatDoc.data()?.participants || [];
+      const recipientId = participants.find(id => id !== auth.currentUser?.uid);
+
+      // Update chat document with latest message and increment unread count for recipient
+      await updateDoc(doc(db, "chats", chatId), {
+        latestMessage: messageText.trim(),
+        createdAt: Timestamp.now(),
+        // Store unread counts per user
+        [`unreadCount.${recipientId}`]: increment(1)
+      });
+
+      setMessageText("");
+    } catch (error) {
+      console.error("Failed to send message:", error);
     }
   };
 
   const renderMessageItem = ({ item }: { item: Message }) => {
-    const isCurrentUserSender = item.senderId === currentUserId;  
+    const isCurrentUserSender = item.senderId === auth.currentUser?.uid;  
     return (
       <View
         style={[
@@ -188,7 +212,14 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
         </View>
 
         {isCurrentUserSender && (
-          <Image source={{ uri: currentUser?.profilePicture }} style={styles.senderImage} />
+          <Image 
+            source={{ 
+              uri: auth.currentUser?.photoURL || 
+                   'https://ui-avatars.com/api/?name=' + auth.currentUser?.displayName?.replace(/\s+/g, '+') || 
+                   'https://ui-avatars.com/api/?name=User'
+            }} 
+            style={styles.senderImage} 
+          />
         )}
 
       </View>
@@ -233,7 +264,10 @@ const ChatConversation: React.FC<ChatConversationProps> = ({
           value={messageText}
           onChangeText={setMessageText}
         />
-        <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
+        <TouchableOpacity 
+          style={styles.sendButton} 
+          onPress={() => sendMessage()}
+        >
           <MaterialIcons name="send" size={24} color="#fff" />
         </TouchableOpacity>
       </View>

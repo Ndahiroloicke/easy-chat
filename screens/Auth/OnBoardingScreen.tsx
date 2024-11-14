@@ -45,7 +45,7 @@ const OnBoardingScreen = () => {
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate(routes.REGISTER)}
+            onPress={() => navigation.navigate("Auth", { screen: "Login" })}
           >
             <Text style={styles.buttonText}>Continue</Text>
           </TouchableOpacity>

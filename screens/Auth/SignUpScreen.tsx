@@ -36,6 +36,7 @@ import Button from "../../components/Button";
 import { getFirebaseErrorMessage } from "../../utils/getFirebaseError";
 import { storeUserData } from "../../utils/AuthStorage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 const { width } = Dimensions.get("window");
 
@@ -85,29 +86,40 @@ const SignUpScreen: React.FC = () => {
       const usersRef = collection(db, "users");
       const q = query(usersRef, where("email", "==", values.email));
       const querySnapshot = await getDocs(q);
+      
       if (!querySnapshot.empty) {
         ToastAndroid.show(
           "Email already in use, please choose another.",
           ToastAndroid.LONG
         );
-      } else {
-        const userData: UserData = {
-          name: values.name,
-          email: values.email,
-          sex: values.sex,
-          age: values.age,
-          password: values.password,
-        };
-        await storeUserData(userData);
-        const password = userData.password || "";
-        await AsyncStorage.setItem("userPassword",password);
-        const setPassword = await AsyncStorage.getItem("userPassword");
-        console.log(setPassword);
-        navigation.navigate(routes.PROFILESETUP);
+        return;
       }
+
+      // Create user in Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        values.email,
+        values.password
+      );
+
+      // Store user data in Firestore
+      const userData = {
+        name: values.name,
+        email: values.email,
+        sex: values.sex,
+        age: values.age,
+        password: values.password,
+        id: userCredential.user.uid,
+        isProfileComplete: false
+      };
+
+      await setDoc(doc(db, "users", userCredential.user.uid), userData);
+      await storeUserData(userData); // Store in AsyncStorage
+      
+      navigation.navigate("ProfileSetup");
     } catch (error: any) {
       console.error("Error signing up:", error.message);
-      ToastAndroid.show("An error occurred during sign-up.", ToastAndroid.LONG);
+      ToastAndroid.show(getFirebaseErrorMessage(error.code) || "An error occurred during sign-up.", ToastAndroid.LONG);
     } finally {
       setIsLoading(false);
     }

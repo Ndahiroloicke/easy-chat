@@ -8,8 +8,9 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db, auth } from "../../utils/firebase.config";
+import { onAuthStateChanged } from "firebase/auth";
 
 interface User {
   uid: string;
@@ -19,7 +20,7 @@ interface User {
 }
 
 interface CommunicationsProps {
-  openChat: (uid: string) => void;
+  openChat: (chatId?: string, userId?: string) => void;
 }
 
 const Communications: React.FC<CommunicationsProps> = ({ openChat }) => {
@@ -27,7 +28,36 @@ const Communications: React.FC<CommunicationsProps> = ({ openChat }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [myProfile, setMyProfile] = useState<User | null>(null);
-  const currentUser = auth.currentUser;
+  const [currentAuthUser, setCurrentAuthUser] = useState(auth.currentUser);
+
+  useEffect(() => {
+    // Force a re-check of auth state
+    const user = auth.currentUser;
+    console.log("Direct auth check:", user?.email);
+    
+    // If not logged in, you might want to redirect to login
+    if (!user) {
+      console.log("User not authenticated!");
+      // Handle unauthenticated state here
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log("Initial auth state:", auth.currentUser?.uid);
+    
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log("Auth state changed:", user?.uid);
+      setCurrentAuthUser(user);
+    });
+
+    console.log("Is Firebase initialized:", !!auth.app);
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    console.log("currentAuthUser updated:", currentAuthUser?.uid);
+  }, [currentAuthUser]);
 
   // Fetch all users excluding the current user
   const fetchUsers = async (search: string = "") => {
@@ -46,8 +76,9 @@ const Communications: React.FC<CommunicationsProps> = ({ openChat }) => {
           uid: doc.id,
           ...doc.data(),
         }))
-        .filter((user) => user.uid !== currentUser?.uid); // Exclude current user
+        .filter((user) => user.uid !== currentAuthUser?.uid); // Exclude current user
       setUsers(fetchedUsers as User[]);
+      console.log(fetchedUsers);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -64,10 +95,43 @@ const Communications: React.FC<CommunicationsProps> = ({ openChat }) => {
     fetchUsers(text);
   };
 
+  const handleChatOpen = async (otherUserId: string) => {
+    if (!currentAuthUser) {
+      console.log("No current user found - please login first");
+      return;
+    }
+
+    try {
+      const chatId = [currentAuthUser.uid, otherUserId].sort().join('_');
+      console.log("Generated chatId:", chatId);
+
+      const chatRef = doc(db, "chats", chatId);
+      const chatDoc = await getDoc(chatRef);
+
+      if (!chatDoc.exists()) {
+        console.log("Creating new chat document");
+        await setDoc(chatRef, {
+          participants: [currentAuthUser.uid, otherUserId],
+          createdAt: serverTimestamp(),
+          lastMessage: null,
+          lastMessageTime: null
+        });
+      }
+
+      console.log("Calling openChat with:", chatId, otherUserId);
+      openChat(chatId, otherUserId);
+    } catch (error) {
+      console.error("Error in handleChatOpen:", error);
+    }
+  };
+
   const renderUserItem = ({ item }: { item: User }) => (
     <TouchableOpacity
       style={styles.userContainer}
-      onPress={() => openChat(item.uid)}
+      onPress={() => {
+        console.log("User item pressed:", item.uid);
+        handleChatOpen(item.uid);
+      }}
     >
       <Image source={{ uri: item.profile }} style={styles.userImage} />
       <View style={styles.userInfo}>
