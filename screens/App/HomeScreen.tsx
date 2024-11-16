@@ -76,9 +76,9 @@ const HomeScreen = () => {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
-  const handleOpenChat = (newChatId: string, newUserId?: string) => {
+  const handleOpenChat = (newChatId?: string, newUserId?: string) => {
     console.log("Opening chat with ID:", newChatId, "and userId:", newUserId);
-    setChatId(newChatId);
+    setChatId(newChatId || null);
     setUserId(newUserId || null);
     setActiveTab("achat");
   };
@@ -104,7 +104,7 @@ const HomeScreen = () => {
       case "achat":
         return (
           <ChatConversation
-            chatId={chatId}
+            chatId={chatId || undefined}
             userId={userId || undefined}
             onBack={() => {
               setUserId(null);

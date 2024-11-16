@@ -31,7 +31,8 @@ import { COLORS } from "../../constants";
 interface User {
   id: string;
   name: string;
-  profile: string; // Assuming you have a profile picture URL
+  profile: string;
+  uid: string;
 }
 
 interface ChatConversationProps {
@@ -144,7 +145,7 @@ const ChatConversation: React.FC<ChatConversationProps> = ({ chatId: initialChat
       // Mark messages as read
       const chatRef = doc(db, "chats", chatId);
       updateDoc(chatRef, {
-        [`lastReadBy.${currentUser.uid}`]: Timestamp.now(),
+        [`lastReadBy.${currentUser.id}`]: Timestamp.now(),
         // Reset unread count for current user
         unreadCount: 0
       });
@@ -165,7 +166,7 @@ const ChatConversation: React.FC<ChatConversationProps> = ({ chatId: initialChat
       // Get the recipient's ID (the other participant)
       const chatDoc = await getDoc(doc(db, "chats", chatId));
       const participants = chatDoc.data()?.participants || [];
-      const recipientId = participants.find(id => id !== auth.currentUser?.uid);
+      const recipientId = participants.find((id: string) => id !== auth.currentUser?.uid);
 
       // Update chat document with latest message and increment unread count for recipient
       await updateDoc(doc(db, "chats", chatId), {

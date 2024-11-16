@@ -28,7 +28,7 @@ interface Chat {
   participants: string[];
   latestMessage?: string;
   createdAt: any;
-  unreadCount?: number;
+  unreadCount?: { [key: string]: number };
   lastReadBy?: { [key: string]: Timestamp };
 }
 
@@ -47,7 +47,9 @@ const ChatItem: React.FC<{
   user: any; 
   handleChatOpen: (chatId?: string, userId?: string) => void 
 }> = ({ chat, user, handleChatOpen }) => {
-  const currentUserUnreadCount = chat.unreadCount?.[auth.currentUser?.uid] || 0;
+  const currentUserUnreadCount = (chat.unreadCount && auth.currentUser?.uid) 
+    ? chat.unreadCount[auth.currentUser.uid] 
+    : 0;
 
   return (
     <TouchableOpacity 

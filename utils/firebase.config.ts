@@ -1,4 +1,4 @@
-import firebaseConfig from '../firebase.json';
+import firebaseConfig from '../firebase.config';
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAnalytics, isSupported } from "firebase/analytics";
 import { getAuth } from "firebase/auth";

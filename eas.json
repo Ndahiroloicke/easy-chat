@@ -1,20 +1,22 @@
 {
+  "cli": {
+    "version": ">= 3.13.3",
+    "appVersionSource": "remote"
+  },
   "build": {
     "preview": {
       "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "gradleCommand": ":app:assembleRelease",
+        "env": {
+          "ANDROID_NDK_HOME": "/opt/android-ndk"
+        }
       }
     },
     "preview2": {
       "android": {
-        "gradleCommand": ":app:assembleRelease"
+        "gradleCommand": ":app:assembleDebug"
       }
-    },
-    "preview3": {
-      "developmentClient": true
-    },
-    "preview4": {
-      "distribution": "internal"
     },
     "production": {}
   }
