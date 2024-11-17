@@ -4,6 +4,7 @@ import { getAnalytics, isSupported } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+//codes for firebase initialization and services which are used in the app
 
 // Initialize Firebase only if it hasn't been initialized yet
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
