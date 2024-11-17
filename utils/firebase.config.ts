@@ -8,6 +8,7 @@ import { getStorage } from "firebase/storage";
 // Initialize Firebase only if it hasn't been initialized yet
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
+// Initialize Firebase services
 let analytics;
 isSupported().then((supported) => {
   if (supported) {
