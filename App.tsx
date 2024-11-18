@@ -2,7 +2,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback, useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, ActivityIndicator } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import {
   onAuthStateChanged,
@@ -21,9 +21,24 @@ import { getUserData } from "./utils/AuthStorage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import RootNavigator from "./Navigation/RootNavigator";
 
+async function handleStoredUserAuth() {
+  const storedUser = await getUserData();
+  if (storedUser && storedUser.authToken) {
+    try {
+      const password = await AsyncStorage.getItem("userPassword");
+      await signInWithEmailAndPassword(auth, storedUser.email, password as string);
+      return auth.currentUser;
+    } catch (error: any) {
+      console.error("Error during re-authentication:", error.message);
+      return null;
+    }
+  }
+  return null;
+}
+
 export default function App() {
   const [fontsLoaded] = useFonts(FONTS);
-  const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const onLayoutRootView = useCallback(async () => {
@@ -33,48 +48,39 @@ export default function App() {
   }, [fontsLoaded]);
 
   useEffect(() => {
-    const checkAuthState = async () => {
-      const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
-        if (authUser) {
-          setUser(authUser);
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        // Try to restore the session if user is null
+        const restoredUser = await handleStoredUserAuth();
+        if (!restoredUser) {
+          setIsAuthenticated(false);
           setLoading(false);
-        } else {
-          const storedUser = await getUserData();
-          if (storedUser && storedUser.authToken) {
-            try {
-              console.log(storedUser);
-              const password = await AsyncStorage.getItem("userPassword");
-              console.log(password);
-              await signInWithEmailAndPassword(
-                auth,
-                storedUser.email,
-                password as any
-              );
-              setUser(auth.currentUser);
-            } catch (error: any) {
-              console.error("Error during re-authentication:", error.message);
-              setUser(null);
-            }
-          } else {
-            setUser(null);
-          }
-          setLoading(false);
+          return;
         }
-      });
-      return () => unsubscribe();
-    };
-    checkAuthState();
+      }
+      
+      try {
+        const userData = await getUserData();
+        setIsAuthenticated(!!userData);
+      } catch (error) {
+        console.error("Error getting user data:", error);
+        setIsAuthenticated(false);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   if (!fontsLoaded || loading) {
-    return null;
+    return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
   return (
     <ThemeProvider>
       <SafeAreaProvider onLayout={onLayoutRootView}>
         <NavigationContainer>
-          <RootNavigator />
+          {isAuthenticated ? <AppNavigator /> : <AuthNavigator />}
         </NavigationContainer>
       </SafeAreaProvider>
       <Toast />

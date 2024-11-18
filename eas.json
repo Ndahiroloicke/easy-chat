@@ -18,7 +18,16 @@
         "gradleCommand": ":app:assembleDebug"
       }
     },
-    "production": {},
+    "production": {
+      "android": {
+        "buildType": "apk",
+        "env": {
+          "APP_ENV": "production",
+          "FIREBASE_API_KEY": "AIzaSyCsAj9VVmA2kB7MzO4yV1DSv6Yuh77JErg"
+        },
+        "channel": "production"
+      }
+    },
     "development": {
       "developmentClient": true,
       "distribution": "internal",

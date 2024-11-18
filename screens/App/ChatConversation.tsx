@@ -191,11 +191,11 @@ const ChatConversation: React.FC<ChatConversationProps> = ({ chatId: initialChat
           isCurrentUserSender ? styles.myMessage : styles.otherMessage,
         ]}
       >
-        {/* Show the profile image of the sender of each message */}
+        {/* Show receiver's profile image on the left */}
         {!isCurrentUserSender && (
           <Image source={{ uri: user?.profile }} style={styles.senderImage} />
         )}
-  
+
         <View
           style={[
             styles.messageContent,
@@ -212,17 +212,13 @@ const ChatConversation: React.FC<ChatConversationProps> = ({ chatId: initialChat
           </Text>
         </View>
 
+        {/* Show sender's profile image on the right */}
         {isCurrentUserSender && (
           <Image 
-            source={{ 
-              uri: auth.currentUser?.photoURL || 
-                   'https://ui-avatars.com/api/?name=' + auth.currentUser?.displayName?.replace(/\s+/g, '+') || 
-                   'https://ui-avatars.com/api/?name=User'
-            }} 
+            source={{ uri: currentUser?.profile }} 
             style={styles.senderImage} 
           />
         )}
-
       </View>
     );
   };
@@ -300,6 +296,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
+    paddingHorizontal: 10,
   },
   myMessage: {
     justifyContent: "flex-end",
@@ -311,8 +308,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    marginRight: 10,
-    marginLeft:10,
+    marginHorizontal: 8,
   },
   iconRow: {
     flexDirection: "row",
@@ -327,7 +323,7 @@ const styles = StyleSheet.create({
     borderRadius:10
   },
   messageContent: {
-    maxWidth: "75%",
+    maxWidth: "70%",
     padding: 10,
     borderRadius: 10,
   },

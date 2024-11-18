@@ -24,7 +24,8 @@ interface Publication {
   distance: string;
   description: string;
   createdAt: number;
-  profilePicture: string;
+  uploaderImage: string;
+  creator: string;
 }
 
 interface PublicationsProps {
@@ -121,19 +122,18 @@ const Publications: React.FC<PublicationsProps> = ({ openAdvertisement }) => {
 
   const renderPublicationItem = ({ item }: { item: Publication }) => (
     <View style={styles.publicationContainer}>
-      {/* Profile Image */}
-      <Image
-        source={{ uri: item.profilePicture }}
-        style={styles.profileImage}
-      />
-      {/* Right Content */}
+      {item.uploaderImage && (
+        <Image
+          source={{ uri: item.uploaderImage }}
+          style={styles.profileImage}
+        />
+      )}
       <View style={styles.textContainer}>
+        <Text style={styles.creatorText}>{item.creator}</Text>
         <Text numberOfLines={4} style={styles.descriptionText}>
           {item.description}
         </Text>
       </View>
-
-      {/* Icon Button */}
       <TouchableOpacity
         style={styles.iconButton}
         onPress={() => openAdvertisement(item.id)}
@@ -416,6 +416,12 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  creatorText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 4,
   },
 });
 

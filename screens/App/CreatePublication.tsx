@@ -47,7 +47,7 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileI
         const userData = await getUserData();
         if (userData) {
           setCurrentUser(userData as User);
-          console.log(currentUser);
+          console.log(currentUser?.profile);
         }
       } catch (error) {
         console.error("Failed to fetch current user:", error);
@@ -59,20 +59,19 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileI
   const handleSubmit = async (values: any) => {
     setLoading(true);
     try {
-      // Retrieve the user's profile picture URL
-      const profilePicture = currentUser?.profilePicture; 
-      console.log(profileImage)// Ensure this matches your user data structure
-
-      await addDoc(collection(db, "advertisements"), {
+      const docData = {
         ...values,
-        creator: currentUser?.name,
-        profilePicture, // Store the profile picture URL with the ad
+        creator: currentUser?.name || 'Anonymous',
+        uploaderImage: currentUser?.profile || null,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-      });
+      };
+
+      await addDoc(collection(db, "advertisements"), docData);
       ToastAndroid.show("Announcement created successfully!", ToastAndroid.SHORT);
       onClose();
     } catch (error: any) {
+      console.error('Error creating announcement:', error);
       ToastAndroid.show(`Error: ${error.message}`, ToastAndroid.LONG);
     } finally {
       setLoading(false);
