@@ -21,6 +21,7 @@
     "axios": "^1.7.7",
     "expo": "^51.0.9",
     "expo-camera": "~15.0.10",
+    "expo-dev-client": "~4.0.29",
     "expo-face-detector": "~12.7.1",
     "expo-font": "~12.0.6",
     "expo-image-picker": "~15.0.5",

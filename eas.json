@@ -18,6 +18,13 @@
         "gradleCommand": ":app:assembleDebug"
       }
     },
-    "production": {}
+    "production": {},
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleDebug"
+      }
+    }
   }
 }
