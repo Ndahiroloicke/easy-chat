@@ -13,6 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../../constants";
 import { AuthScreenNavigatorProps } from "../../constants/types";
 import routes from "../../Navigation/routes";
+import { Feather } from '@expo/vector-icons';
 
 const { width, height } = Dimensions.get("window");
 
@@ -35,20 +36,24 @@ const OnBoardingScreen = () => {
             <Text style={[styles.name, styles.nameBlue]}>Chat</Text>
           </View>
 
-          <TouchableOpacity>
-            <Text style={styles.link}>Contact Us</Text>
+          <TouchableOpacity style={styles.linkContainer}>
+            <Feather name="phone" size={20} color={COLORS.primary} />
+            <Text style={[styles.link, styles.linkWithIcon]}>Contacta con nosotros</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity>
-            <Text style={styles.link}>Call Us</Text>
+          <TouchableOpacity style={styles.linkContainer}>
+            <Feather name="help-circle" size={20} color={COLORS.primary} />
+            <Text style={[styles.link, styles.linkWithIcon]}>Ayuda/FAQ</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.button}
             onPress={() => navigation.navigate("Register")}
           >
-            <Text style={styles.buttonText}>Continue</Text>
+            <Text style={styles.buttonText}>CONTINUAR</Text>
           </TouchableOpacity>
+
+          <Text style={styles.copyright}>Copyright 2022 Esychat Inc {'\n'}All rights reserved</Text>
         </View>
       </ImageBackground>
     </SafeAreaView>
@@ -112,5 +117,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.white,
     textAlign: "center",
+  },
+  linkContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 5,
+  },
+  linkWithIcon: {
+    marginLeft: 6,
+  },
+  copyright: {
+    position: 'absolute',
+    bottom: 20,
+    color: COLORS.primary,
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
