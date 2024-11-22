@@ -34,8 +34,8 @@ type FormValues = {
 };
 
 const validationSchema = Yup.object().shape({
-  username: Yup.string().required("Username is required").label("Username"),
-  profile: Yup.string().required("Profile image is required"),
+  username: Yup.string().required("El nombre de usuario es obligatorio").label("Nombre de usuario"),
+  profile: Yup.string().required("La imagen de perfil es obligatoria"),
 });
 
 interface UserData {
@@ -84,7 +84,7 @@ const ProfileScreen: React.FC = () => {
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
       
       if (!permissionResult.granted) {
-        ToastAndroid.show("Permission to access gallery was denied", ToastAndroid.LONG);
+        ToastAndroid.show("Permiso para acceder a la galería denegado", ToastAndroid.LONG);
         return;
       }
 
@@ -99,11 +99,11 @@ const ProfileScreen: React.FC = () => {
         const selectedImage = result.assets[0];
         console.log("Selected image:", selectedImage.uri); // Debug log
         setFieldValue("profile", selectedImage.uri);
-        ToastAndroid.show("Image selected successfully", ToastAndroid.SHORT);
+        ToastAndroid.show("Imagen seleccionada correctamente", ToastAndroid.SHORT);
       }
     } catch (error) {
       console.error("Error picking image:", error);
-      ToastAndroid.show("Error selecting image", ToastAndroid.LONG);
+      ToastAndroid.show("Error al seleccionar la imagen", ToastAndroid.LONG);
     }
   };
 
@@ -113,7 +113,7 @@ const ProfileScreen: React.FC = () => {
       // 1. Get stored user data
       const userData = await getUserData();
       if (!userData || !userData.id) {
-        ToastAndroid.show("Missing user data. Please sign up again.", ToastAndroid.LONG);
+        ToastAndroid.show("Datos de usuario no encontrados. Por favor, regístrese de nuevo.", ToastAndroid.LONG);
         navigation.navigate("SignUp");
         return;
       }
@@ -153,11 +153,11 @@ const ProfileScreen: React.FC = () => {
         routes: [{ name: 'App' }],
       });
 
-      ToastAndroid.show("Profile setup complete!", ToastAndroid.SHORT);
+      ToastAndroid.show("¡Perfil configurado correctamente!", ToastAndroid.SHORT);
     } catch (error: any) {
       console.error("Error in profile setup:", error);
       ToastAndroid.show(
-        error.message || "Error setting up profile",
+        error.message || "Error al configurar el perfil",
         ToastAndroid.LONG
       );
     } finally {
@@ -196,7 +196,7 @@ const ProfileScreen: React.FC = () => {
               <Text style={[styles.title, styles.titleBlue]}>Chat</Text>
             </View>
 
-            <Text style={[styles.subHeader]}>My Profile</Text>
+            <Text style={[styles.subHeader]}>Mi Perfil</Text>
 
             <Formik
               initialValues={initialValues}
@@ -242,7 +242,7 @@ const ProfileScreen: React.FC = () => {
                   <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.input}
-                      placeholder="Username"
+                      placeholder="Nombre de usuario"
                       onChangeText={handleChange("username")}
                       value={values.username}
                     />
@@ -253,7 +253,7 @@ const ProfileScreen: React.FC = () => {
 
                   <View style={styles.buttonContainer}>
                     <Button
-                      title="Set Profile"
+                      title="Configurar Perfil"
                       onpress={() => handleSubmit()}
                       loading={isLoading}
                     />

@@ -36,16 +36,16 @@ const { width } = Dimensions.get("window");
 const validationSchema = Yup.object().shape({
   email: Yup.string()
     .email()
-    .required("Please enter a valid email")
+    .required("Por favor, introduce un email válido")
     .label("Email"),
   password: Yup.string()
     .min(6)
-    .matches(/^(?=.*[a-z])/, "Must contain at least one lowercase character")
-    .matches(/^(?=.*[A-Z])/, "Must contain at least one uppercase character")
-    .matches(/^(?=.*[0-9])/, "Must contain at least one number")
-    .matches(/^(?=.*[!@#%&])/, "Must contain at least one special character")
-    .required("Please enter a password")
-    .label("Password"),
+    .matches(/^(?=.*[a-z])/, "Debe contener al menos un carácter en minúscula")
+    .matches(/^(?=.*[A-Z])/, "Debe contener al menos un carácter en mayúscula")
+    .matches(/^(?=.*[0-9])/, "Debe contener al menos un número")
+    .matches(/^(?=.*[!@#%&])/, "Debe contener al menos un carácter especial")
+    .required("Por favor, introduce una contraseña")
+    .label("Contraseña"),
 });
 
 type FormValues = {
@@ -131,7 +131,7 @@ const LogInScreen: React.FC = () => {
               <Text style={[styles.title, styles.titleBlue]}>Chat</Text>
             </View>
 
-            <Text style={[styles.subHeader]}>Log In</Text>
+            <Text style={[styles.subHeader]}>Iniciar Sesión</Text>
             <Formik
               initialValues={{
                 name: "",
@@ -152,7 +152,7 @@ const LogInScreen: React.FC = () => {
                   <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.input}
-                      placeholder="Email"
+                      placeholder="Correo electrónico"
                       keyboardType="email-address"
                       onChangeText={handleChange("email")}
                       autoCapitalize="none"
@@ -167,7 +167,7 @@ const LogInScreen: React.FC = () => {
                   <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.input}
-                      placeholder="Password"
+                      placeholder="Contraseña"
                       secureTextEntry={!showPassword}
                       onChangeText={handleChange("password")}
                       autoCapitalize="none"
@@ -186,11 +186,11 @@ const LogInScreen: React.FC = () => {
                     <Text style={styles.errorText}>{errors.password}</Text>
                   )}
 
-                  <CheckBox text="Remember Me" />
+                  <CheckBox text="Recuérdame" />
 
                   <View style={styles.buttonContainer}>
                     <Button
-                      title="Log In"
+                      title="Iniciar Sesión"
                       onpress={() => handleSubmit()}
                       loading={isLoading}
                     />
@@ -200,12 +200,12 @@ const LogInScreen: React.FC = () => {
             </Formik>
 
             <View style={styles.redirect}>
-              <Text style={styles.redirectText}>Not a member? </Text>
+              <Text style={styles.redirectText}>¿No eres miembro? </Text>
               <TouchableOpacity
                 onPress={() => navigation.navigate(routes.REGISTER)}
               >
                 <Text style={[styles.redirectLink, { color: COLORS.primary }]}>
-                  Register
+                  Regístrate
                 </Text>
               </TouchableOpacity>
             </View>
