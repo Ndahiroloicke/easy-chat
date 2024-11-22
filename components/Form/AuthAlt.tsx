@@ -6,7 +6,7 @@ import { COLORS } from "../../constants"; // Assuming COLORS is imported from yo
 const AuthAlt = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Continue with</Text>
+      <Text style={styles.headerText}>Registrarte con</Text>
       <View style={styles.buttonContainer}>
         <View style={[styles.logoContainer, styles.facebook]}>
           <FontAwesome name="facebook" size={25} color="#ffffff" />

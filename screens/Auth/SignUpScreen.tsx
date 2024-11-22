@@ -138,7 +138,7 @@ const SignUpScreen: React.FC = () => {
               <Text style={[styles.title, styles.titleBlue]}>Chat</Text>
             </View>
 
-            <Text style={styles.subHeader}>Create Account</Text>
+            <Text style={styles.subHeader}>Crear Cuenta</Text>
             <Formik
               initialValues={{
                 name: "",
@@ -159,7 +159,7 @@ const SignUpScreen: React.FC = () => {
                   <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.input}
-                      placeholder="Full Names"
+                      placeholder="Nombre"
                       onChangeText={handleChange("name")}
                       autoCapitalize="words"
                       autoCorrect={false}
@@ -173,7 +173,7 @@ const SignUpScreen: React.FC = () => {
                   <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.input}
-                      placeholder="Email"
+                      placeholder="Correo Electrónico"
                       keyboardType="email-address"
                       onChangeText={handleChange("email")}
                       autoCapitalize="none"
@@ -188,7 +188,7 @@ const SignUpScreen: React.FC = () => {
                   <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.input}
-                      placeholder="Password"
+                      placeholder="Contraseña"
                       secureTextEntry={!showPassword}
                       onChangeText={handleChange("password")}
                       autoCapitalize="none"
@@ -210,7 +210,7 @@ const SignUpScreen: React.FC = () => {
                   <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.input}
-                      placeholder="Repeat Password"
+                      placeholder="Repite la contraseña"
                       secureTextEntry={!showRepeatPassword}
                       onChangeText={handleChange("repeatPassword")}
                       autoCapitalize="none"
@@ -236,7 +236,7 @@ const SignUpScreen: React.FC = () => {
                       <View style={styles.inputContainer}>
                         <TextInput
                           style={styles.input}
-                          placeholder="Gender"
+                          placeholder="El sexo"
                           onChangeText={handleChange("sex")}
                           autoCapitalize="none"
                           autoCorrect={false}
@@ -248,7 +248,7 @@ const SignUpScreen: React.FC = () => {
                       <View style={styles.inputContainer}>
                         <TextInput
                           style={[styles.input, styles.gridInput]}
-                          placeholder="Age"
+                          placeholder="Envejecer"
                           keyboardType="numeric"
                           onChangeText={handleChange("age")}
                           autoCapitalize="none"
@@ -264,26 +264,27 @@ const SignUpScreen: React.FC = () => {
                       {errors.age || errors.sex}
                     </Text>     
                   )}
-                  <CheckBox text="I agree with EsyChat Terms & Policy" />
+                  <CheckBox text="Accepto los Terminos y Condiciones" />
 
                   <View style={styles.buttonContainer}>
                     <Button
-                      title={"Create Account"}
+                      title={"Crear Cuenta"}
                       onpress={handleSubmit}
                       loading={isLoading}
                     />
                   </View>
                 </View>
+
               )}
             </Formik>
 
             <View style={styles.redirect}>
-              <Text style={styles.redirectText}>Already a member? </Text>
+              <Text style={styles.redirectText}>Ya tienes una cuenta? </Text>
               <TouchableOpacity
                 onPress={() => navigation.navigate(routes.LOGIN)}
               >
                 <Text style={[styles.redirectLink, { color: COLORS.primary }]}>
-                  Log In
+                  Entre aqui
                 </Text>
               </TouchableOpacity>
             </View>
