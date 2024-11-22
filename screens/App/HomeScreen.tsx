@@ -151,76 +151,75 @@ const HomeScreen = () => {
           <Text style={[styles.title, { color: COLORS.white }]}>Chat</Text>
         </View>
         <TouchableOpacity onPress={toggleMenu}>
-        <Entypo name="dots-three-vertical" size={24} color="#fff" />
+          <Entypo name="dots-three-vertical" size={24} color="#fff" />
         </TouchableOpacity>
         <MenuModal visible={menuVisible} onClose={toggleMenu}></MenuModal>
-       
       </View>
       {activeTab !== "achat" && activeTab !== "add-publication" && (
         <View style={{flex:1, flexDirection:'row', maxHeight:130}}>
           <TouchableOpacity style={{marginTop:19, marginRight:9, justifyContent:"flex-start"}} onPress={() => setActiveTab("communication")}>
             <View style={{flex:1, flexDirection:"column",alignItems:"center"}}>
-            <View
-              style={{
-                padding: 5,
-                backgroundColor: COLORS.gray,
-                borderRadius: 100,
-                width: 60,
-                height: 60,
-                alignItems:"center",
-                marginTop:-10,
-                justifyContent:"center"
-              }}
+              <View
+                style={{
+                  padding: 5,
+                  backgroundColor: COLORS.gray,
+                  borderRadius: 100,
+                  width: 60,
+                  height: 60,
+                  alignItems:"center",
+                  marginTop:-10,
+                  justifyContent:"center"
+                }}
+              >
+                <Image source={images.profile} />
+              </View>
+              <Text style={{marginTop:12}}>{currentUser?.name}</Text>
+            </View>
+          </TouchableOpacity>
+          <View style={{height:100,alignItems:"center"}}>
+            <TouchableOpacity
+              style={[
+                activeTab === "communication" ? styles.activeButton : styles.button,{
+                  marginTop:6
+                }
+              ]}
+              onPress={() => setActiveTab("communication")}
             >
-            <Image source={images.profile} />
-            </View>
-            <Text style={{marginTop:12}}>{currentUser?.name}</Text>
-            </View>
-          </TouchableOpacity>
-          <View style={{height:100,alignItems:"center"}}>
-          <TouchableOpacity
-            style={[
-              activeTab === "communication" ? styles.activeButton : styles.button,{
-                marginTop:6
-              }
-            ]}
-            onPress={() => setActiveTab("communication")}
-          >
-            <Image source={images.communication} style={styles.tabIcon} />
-            {activeTab === "communication" ? <Text style={{color:"white",marginTop:15, width:60}}>Communication</Text> : <Text style={{color:"black"}}></Text>}
-          </TouchableOpacity>
-          {activeTab != "communication" && <Text style={{color:"black"}}>Communication</Text>}
+              <Image source={images.communication} style={styles.tabIcon} />
+              {activeTab === "communication" ? <Text style={{color:"white",marginTop:15, width:60}}>Comunicación</Text> : <Text style={{color:"black"}}></Text>}
+            </TouchableOpacity>
+            {activeTab != "communication" && <Text style={{color:"black"}}>Comunicación</Text>}
           </View>
           <View style={{height:100,alignItems:"center"}}>
-          <TouchableOpacity
-            style={[
-              activeTab === "chats"  ? styles.activeButton : styles.button ,{
-                paddingHorizontal:20,
-                marginTop:7
-              }
-            ]}
-            onPress={() => setActiveTab("chats")}
-          >
-            <Image source={images.chats} style={styles.tabIcon} />
-            {activeTab === "chats" ? <Text style={{color:"white",marginTop:20}}>Chats</Text> : <Text></Text>}
-         </TouchableOpacity>
-          {activeTab != "chats" && <Text style={{color:"black"}}>Chats</Text>}
+            <TouchableOpacity
+              style={[
+                activeTab === "chats"  ? styles.activeButton : styles.button ,{
+                  paddingHorizontal:20,
+                  marginTop:7
+                }
+              ]}
+              onPress={() => setActiveTab("chats")}
+            >
+              <Image source={images.chats} style={styles.tabIcon} />
+              {activeTab === "chats" ? <Text style={{color:"white",marginTop:20}}>Chats</Text> : <Text></Text>}
+            </TouchableOpacity>
+            {activeTab != "chats" && <Text style={{color:"black"}}>Chats</Text>}
           </View>
           <View style={{height:100,alignItems:"center"}}>
-          <TouchableOpacity
-            style={[
-              { backgroundColor: COLORS.secondaryBlue },
-              activeTab === "advertisements" ? styles.activeButton : styles.button,{
-                paddingHorizontal:20,
-                marginTop:7
-              }
-            ]}
-            onPress={() => setActiveTab("advertisements")}
-          >
-            <Image source={images.advertisements} style={styles.tabIcon} />
-            {activeTab === "advertisements" ? <Text style={{color:"white",marginTop:15, fontWeight:500}}>Ads</Text> : <Text></Text>}
-          </TouchableOpacity>
-          {activeTab != "advertisements" && <Text style={{color:"black"}}>Ads</Text>}
+            <TouchableOpacity
+              style={[
+                { backgroundColor: COLORS.secondaryBlue },
+                activeTab === "advertisements" ? styles.activeButton : styles.button,{
+                  paddingHorizontal:20,
+                  marginTop:7
+                }
+              ]}
+              onPress={() => setActiveTab("advertisements")}
+            >
+              <Image source={images.advertisements} style={styles.tabIcon} />
+              {activeTab === "advertisements" ? <Text style={{color:"white",marginTop:15, fontWeight:500}}>Anuncios</Text> : <Text></Text>}
+            </TouchableOpacity>
+            {activeTab != "advertisements" && <Text style={{color:"black"}}>Anuncios</Text>}
           </View>
           <TouchableOpacity style={{marginTop:19,}} onPress={() => setActiveTab("add-publication")}>
             <View
@@ -238,7 +237,7 @@ const HomeScreen = () => {
             >
               <Image source={images.edit} style={styles.tabIcon} />
             </View>
-            <Text style={{marginTop:12}}>Publications</Text>
+            <Text style={{marginTop:12}}>Publicación</Text>
           </TouchableOpacity>
         </View>
       )}

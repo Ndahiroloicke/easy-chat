@@ -65,12 +65,17 @@ const ProfileScreen: React.FC = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const userData = await getUserData();
-      if (userData) {
-        setInitialValues({
-          username: userData.username || "",
-          profile: userData.profile || "",
-        });
+      try {
+        const userData = await getUserData();
+        console.log("Fetched userData:", userData); // Debug log
+        if (userData) {
+          setInitialValues({
+            username: userData.username || "",
+            profile: userData.profile || "",
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
       }
     };
     fetchUserData();
@@ -110,39 +115,51 @@ const ProfileScreen: React.FC = () => {
   const handleSubmit = async (values: FormValues) => {
     setIsLoading(true);
     try {
-      // 1. Get stored user data
       const userData = await getUserData();
+      console.log("Submit userData:", userData); // Debug log
+
       if (!userData || !userData.id) {
         ToastAndroid.show("Datos de usuario no encontrados. Por favor, regístrese de nuevo.", ToastAndroid.LONG);
-        navigation.navigate("SignUp");
         return;
       }
 
       // 2. Upload profile image
       let downloadURL = '';
       if (values.profile) {
-        const profileImageName = `profile_${userData.id}`;
-        const storageRef = ref(storage, `profile_images/${profileImageName}`);
-        const response = await fetch(values.profile);
-        const blob = await response.blob();
-        await uploadBytes(storageRef, blob);
-        downloadURL = await getDownloadURL(storageRef);
+        try {
+          const profileImageName = `profile_${userData.id}_${Date.now()}`; // Add timestamp to prevent cache issues
+          const storageRef = ref(storage, `profile_images/${profileImageName}`);
+          const response = await fetch(values.profile);
+          const blob = await response.blob();
+          
+          console.log("Uploading image...");
+          await uploadBytes(storageRef, blob);
+          console.log("Getting download URL...");
+          downloadURL = await getDownloadURL(storageRef);
+          console.log("Download URL:", downloadURL);
+        } catch (error) {
+          console.error("Error uploading image:", error);
+          ToastAndroid.show("Error al subir la imagen de perfil", ToastAndroid.LONG);
+          return;
+        }
       }
 
       // 3. Update user document in Firestore
-      await updateDoc(doc(db, "users", userData.id), {
+      const userDocRef = doc(db, "users", userData.id);
+      const updateData = {
         username: values.username,
         profile: downloadURL,
         isProfileComplete: true,
         updatedAt: new Date().toISOString()
-      });
+      };
+
+      console.log("Updating Firestore with:", updateData);
+      await updateDoc(userDocRef, updateData);
 
       // 4. Update stored user data
       const updatedUserData = {
         ...userData,
-        username: values.username,
-        profile: downloadURL,
-        isProfileComplete: true
+        ...updateData
       };
       await storeUserData(updatedUserData);
       await AsyncStorage.setItem('profileImage', downloadURL);
@@ -150,14 +167,15 @@ const ProfileScreen: React.FC = () => {
       // 5. Navigate to main app
       navigation.reset({
         index: 0,
-        routes: [{ name: 'App' }],
+        
+        routes: [{ name: routes.COMPLETEAUTH }],
       });
 
       ToastAndroid.show("¡Perfil configurado correctamente!", ToastAndroid.SHORT);
     } catch (error: any) {
       console.error("Error in profile setup:", error);
       ToastAndroid.show(
-        error.message || "Error al configurar el perfil",
+        "Error al configurar el perfil: " + (error.message || "Error desconocido"),
         ToastAndroid.LONG
       );
     } finally {

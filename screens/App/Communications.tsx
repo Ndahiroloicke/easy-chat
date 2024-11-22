@@ -11,6 +11,7 @@ import {
 import { collection, query, where, getDocs, doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db, auth } from "../../utils/firebase.config";
 import { onAuthStateChanged } from "firebase/auth";
+import { Feather } from "@expo/vector-icons";
 
 interface User {
   uid: string;
@@ -92,7 +93,11 @@ const Communications: React.FC<CommunicationsProps> = ({ openChat }) => {
 
   const handleSearch = (text: string) => {
     setSearchQuery(text);
-    fetchUsers(text);
+    if (text.trim()) {
+      fetchUsers(text);
+    } else {
+      fetchUsers();
+    }
   };
 
   const handleChatOpen = async (otherUserId: string) => {
@@ -153,6 +158,18 @@ const Communications: React.FC<CommunicationsProps> = ({ openChat }) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.searchContainer}>
+        <View style={styles.searchInputWrapper}>
+          <Feather name="search" size={20} color="#666" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Buscar usuarios..."
+            value={searchQuery}
+            onChangeText={handleSearch}
+            placeholderTextColor="#666"
+          />
+        </View>
+      </View>
       
       <FlatList
         data={loading ? Array(5).fill({}) : users}
@@ -162,14 +179,6 @@ const Communications: React.FC<CommunicationsProps> = ({ openChat }) => {
         }
         contentContainerStyle={styles.listContainer}
       />
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search Users"
-          value={searchQuery}
-          onChangeText={handleSearch}
-        />
-      </View>
     </View>
   );
 };
@@ -206,20 +215,30 @@ const styles = StyleSheet.create({
     color: "#666",
   },
   listContainer: {
-    paddingBottom: 20,
+    paddingHorizontal: 15,
   },
   searchContainer: {
-    backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    backgroundColor: '#fff',
+    marginBottom: 10,
+  },
+  searchInputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    height: 40,
+  },
+  searchIcon: {
+    marginRight: 10,
   },
   searchInput: {
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 10,
+    flex: 1,
+    fontSize: 16,
+    color: '#333',
+    height: '100%',
   },
   userContainer: {
     flexDirection: "row",

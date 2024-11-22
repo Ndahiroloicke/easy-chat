@@ -50,6 +50,7 @@ export default function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
+        console.log("Auth state changed. User:", user?.uid);
         if (!user) {
           console.log('No user found, attempting to restore session');
           const restoredUser = await handleStoredUserAuth();
@@ -63,7 +64,8 @@ export default function App() {
         
         console.log('Fetching user data');
         const userData = await getUserData();
-        console.log('User data retrieved:', !!userData);
+        console.log('User data retrieved:', userData);
+        console.log('Setting isAuthenticated to:', !!userData);
         setIsAuthenticated(!!userData);
       } catch (error) {
         console.error("Error in auth state change:", error);

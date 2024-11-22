@@ -64,51 +64,51 @@ const LogInScreen: React.FC = () => {
   const handleSubmit = async (values: FormValues) => {
     setIsLoading(true);
     try {
-        console.log("Starting login process...");
+        console.log("1. Starting login process...");
         const userCredential = await signInWithEmailAndPassword(
             auth,
             values.email,
             values.password
         );
-        console.log("Login successful, user:", userCredential.user.uid);
+        console.log("2. Firebase auth successful:", userCredential.user.uid);
         
         const user = userCredential.user;
         const authToken = await user.getIdToken();
-        console.log("Got auth token");
+        console.log("3. Got auth token");
         
-        const refreshToken = await user.getIdToken(true);
         const userDocRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userDocRef);
         if (!userDoc.exists()) {
             throw new Error("User document does not exist");
         }
         const userDataFromFirestore = userDoc.data();
-        console.log(userDataFromFirestore);
+        console.log("4. Got Firestore data:", userDataFromFirestore);
         
-        const userData: UserData = {
-            authToken,
-            refreshToken,
+        const userData = {
+            userId: user.uid,
+            firstName: userDataFromFirestore?.name?.split(' ')[0] || '',
+            lastName: userDataFromFirestore?.name?.split(' ').slice(1).join(' ') || '',
+            name: userDataFromFirestore?.name || '',
+            phone: userDataFromFirestore?.phone || '',
             email: values.email,
-            name: userDataFromFirestore?.name,
-            id: user.uid,
-            sex: userDataFromFirestore?.sex,
-            age: userDataFromFirestore?.age,
+            authToken,
+            refreshToken: await user.getIdToken(true),
+            sex: userDataFromFirestore?.sex || '',
+            age: userDataFromFirestore?.age || '',
+            role: userDataFromFirestore?.role || 'user',
+            emailVerified: user.emailVerified,
+            phoneVerified: userDataFromFirestore?.phoneVerified || false
         };
 
+        console.log("5. Storing user data...");
         await storeUserData(userData);
-        console.log(userData.email);
-        // Store the password in local storage (only if necessary)
+        console.log("6. Setting user in global state...");
+        setUser(userData);
+        
+        // Store password for auto-login
         await AsyncStorage.setItem('userPassword', values.password);
-        console.log("Stored password:", values.password);
+        console.log("7. Login process complete!");
         
-        const userprofile = AsyncStorage.getItem("profileImage");
-        
-        console.log(userprofile)// Log the password for debugging
-
-        // Before navigation, verify auth state
-        console.log("Final auth check:", auth.currentUser?.uid);
-        
-        navigation.navigate("App", { screen: "Home" });
     } catch (error: any) {
         console.error("Login error:", error);
         ToastAndroid.show(getFirebaseErrorMessage(error.code), ToastAndroid.LONG);
