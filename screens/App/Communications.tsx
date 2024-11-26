@@ -163,7 +163,7 @@ const Communications: React.FC<CommunicationsProps> = ({ openChat }) => {
           <Feather name="search" size={20} color="#666" style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Buscar usuarios..."
+           placeholder="Buscar usuarios..."
             value={searchQuery}
             onChangeText={handleSearch}
             placeholderTextColor="#666"

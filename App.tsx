@@ -65,8 +65,14 @@ export default function App() {
         console.log('Fetching user data');
         const userData = await getUserData();
         console.log('User data retrieved:', userData);
-        console.log('Setting isAuthenticated to:', !!userData);
-        setIsAuthenticated(!!userData);
+        
+        if (user && userData) {
+          console.log('Setting authenticated to true');
+          setIsAuthenticated(true);
+        } else {
+          console.log('Setting authenticated to false');
+          setIsAuthenticated(false);
+        }
       } catch (error) {
         console.error("Error in auth state change:", error);
         setIsAuthenticated(false);
@@ -78,6 +84,10 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    console.log('Authentication state changed:', isAuthenticated);
+  }, [isAuthenticated]);
+
   if (!fontsLoaded || loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
@@ -86,7 +96,7 @@ export default function App() {
     <ThemeProvider>
       <SafeAreaProvider onLayout={onLayoutRootView}>
         <NavigationContainer>
-          {isAuthenticated ? <AppNavigator /> : <AuthNavigator />}
+          <RootNavigator />
         </NavigationContainer>
       </SafeAreaProvider>
       <Toast />

@@ -33,6 +33,7 @@ interface User {
   name: string;
   profile: string;
   uid: string;
+  email?: string;
 }
 
 interface ChatConversationProps {
@@ -61,7 +62,12 @@ const ChatConversation: React.FC<ChatConversationProps> = ({ chatId: initialChat
       try {
         const userData = await getUserData();
         if (userData) {
-          setCurrentUser(userData as User);
+          const userDoc = await getDoc(doc(db, "users", auth.currentUser?.uid || ""));
+          const userProfile = userDoc.data()?.profile || "";
+          setCurrentUser({ 
+            ...userData as User,
+            profile: userProfile 
+          });
         }
       } catch (error) {
         console.error("Failed to fetch current user:", error);
@@ -183,39 +189,25 @@ const ChatConversation: React.FC<ChatConversationProps> = ({ chatId: initialChat
   };
 
   const renderMessageItem = ({ item }: { item: Message }) => {
-    const isCurrentUserSender = item.senderId === auth.currentUser?.uid;  
+    const isCurrentUserSender = item.senderId === auth.currentUser?.uid;
+    const defaultImage = "https://via.placeholder.com/40";
+    
     return (
-      <View
-        style={[
-          styles.messageContainer,
-          isCurrentUserSender ? styles.myMessage : styles.otherMessage,
-        ]}
-      >
-        {/* Show receiver's profile image on the left */}
+      <View style={[styles.messageContainer, isCurrentUserSender ? styles.myMessage : styles.otherMessage]}>
         {!isCurrentUserSender && (
-          <Image source={{ uri: user?.profile }} style={styles.senderImage} />
+          <Image 
+            source={{ uri: user?.profile || defaultImage }} 
+            style={styles.senderImage} 
+          />
         )}
-
-        <View
-          style={[
-            styles.messageContent,
-            isCurrentUserSender ? styles.myMessageContent : styles.otherMessageContent,
-          ]}
-        >
-          <Text
-            style={[
-              styles.messageText,
-              isCurrentUserSender ? styles.myMessageText : styles.otherMessageText,
-            ]}
-          >
+        <View style={[styles.messageContent, isCurrentUserSender ? styles.myMessageContent : styles.otherMessageContent]}>
+          <Text style={[styles.messageText, isCurrentUserSender ? styles.myMessageText : styles.otherMessageText]}>
             {item.content}
           </Text>
         </View>
-
-        {/* Show sender's profile image on the right */}
         {isCurrentUserSender && (
           <Image 
-            source={{ uri: currentUser?.profile }} 
+            source={{ uri: currentUser?.profile || defaultImage }} 
             style={styles.senderImage} 
           />
         )}

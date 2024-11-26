@@ -23,15 +23,15 @@ const CompleteSetupScreen = () => {
         </View>
         <View style={styles.contentContainer}>
           <View style={styles.textcontainer}>
-            <Text style={styles.header}>You are All Set!</Text>
+            <Text style={styles.header}>¡Todo está Listo!</Text>
             <Text style={styles.subHeader}>
-              Your account is ready. Let’s start for your better financial
-              experience
+              Tu cuenta está preparada. Comencemos a usar ezy-chat para una mejor
+              experiencia de comunicación
             </Text>
           </View>
           <View style={styles.buttonContainer}>
             <Button
-              title="Go to My Account"
+              title="Ir a Mi Cuenta"
               onpress={() => navigation.navigate(routes.LOGIN)}
             />
           </View>

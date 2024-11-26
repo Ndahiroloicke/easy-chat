@@ -1,4 +1,5 @@
-export default Object.freeze({
+const routes = {
+  // Auth routes
   LOGIN: "Login",
   REGISTER: "Register",
   FORGOTPASSWORD: "ForgotPassword",
@@ -8,7 +9,9 @@ export default Object.freeze({
   IDPREVIEW: "IDPreview",
   PROFILESETUP: "ProfileSetup",
   COMPLETEAUTH: "CompleteAuth",
-  HOME: "Home",
+  
+  // App routes
+  HOME: "HomeScreen",
   ADDFACE: "AddFace",
   NOTIFICATION: "Notifications",
   TRANSACTIONS: "Transactions",
@@ -53,4 +56,6 @@ export default Object.freeze({
   // receipts routes
   RECEIPTS: "Receipts",
   RECEIPTDETAILS: "ReceiptsDetails",
-});
+} as const;
+
+export default Object.freeze(routes);

@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
+import { AppNavigatorProps } from "../../constants/types";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { COLORS, FONTS, data, images } from "../../constants";
@@ -31,7 +32,6 @@ import { storeUserData } from "../../utils/AuthStorage";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const { width } = Dimensions.get("window");
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -56,7 +56,7 @@ type FormValues = {
 const LogInScreen: React.FC = () => {
   const setUser = useUserStore((state) => state.setUser);
   const [isLoading, setIsLoading] = useState(false);
-  const navigation = useNavigation<AuthScreenNavigatorProps>();
+  const navigation = useNavigation<AppNavigatorProps>();
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
@@ -84,11 +84,12 @@ const LogInScreen: React.FC = () => {
         const userDataFromFirestore = userDoc.data();
         console.log("4. Got Firestore data:", userDataFromFirestore);
         
+        const defaultName = values.email.split('@')[0];
         const userData = {
             userId: user.uid,
-            firstName: userDataFromFirestore?.name?.split(' ')[0] || '',
-            lastName: userDataFromFirestore?.name?.split(' ').slice(1).join(' ') || '',
-            name: userDataFromFirestore?.name || '',
+            firstName: userDataFromFirestore?.firstName || defaultName,
+            lastName: userDataFromFirestore?.lastName || '',
+            name: userDataFromFirestore?.name || defaultName,
             phone: userDataFromFirestore?.phone || '',
             email: values.email,
             authToken,
@@ -100,20 +101,28 @@ const LogInScreen: React.FC = () => {
             phoneVerified: userDataFromFirestore?.phoneVerified || false
         };
 
-        console.log("5. Storing user data...");
+        console.log("Storing user data:", userData);
         await storeUserData(userData);
         console.log("6. Setting user in global state...");
         setUser(userData);
         
         // Store password for auto-login
         await AsyncStorage.setItem('userPassword', values.password);
+        
+        // Force a re-render of the auth state
+        await auth.currentUser?.reload();
+        
         console.log("7. Login process complete!");
+        
+        // Let the auth state change handle navigation
+        navigation.navigate('App', { screen: routes.HOME });
         
     } catch (error: any) {
         console.error("Login error:", error);
         ToastAndroid.show(getFirebaseErrorMessage(error.code), ToastAndroid.LONG);
     } finally {
         setIsLoading(false);
+        navigation.navigate(routes.HOME);
     }
 };
 

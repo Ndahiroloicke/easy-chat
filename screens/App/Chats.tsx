@@ -26,10 +26,12 @@ import { COLORS } from "../../constants";
 interface Chat {
   id: string;
   participants: string[];
-  latestMessage?: string;
   createdAt: any;
+  latestMessage?: string;
   unreadCount?: { [key: string]: number };
   lastReadBy?: { [key: string]: Timestamp };
+  hasUnread?: boolean;
+  unreadBy?: string[];
 }
 
 interface User {
@@ -108,59 +110,57 @@ const Chats: React.FC<ChatsProps> = ({ openChat }) => {
   const searchTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    const fetchChats = async () => {
-      if (!currentUser) {
-        console.log("No current user found");
-        setLoading(false);
-        return;
-      }
+    if (!currentUser) return;
 
-      console.log("Fetching chats for user:", currentUser.uid);
-      const chatsRef = collection(db, "chats");
-      const q = query(
-        chatsRef, 
-        where("participants", "array-contains", currentUser.uid), 
-        orderBy("createdAt", "desc")
+    // Create a query for chats where the current user is a participant
+    const chatsRef = collection(db, "chats");
+    const q = query(
+      chatsRef,
+      where("participants", "array-contains", currentUser.uid),
+      orderBy("createdAt", "desc")
+    );
+
+    // Listen for real-time updates
+    const unsubscribe = onSnapshot(q, async (snapshot) => {
+      console.log("Received chat snapshot with", snapshot.docs.length, "chats");
+      const chatsData = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          participants: data.participants || [],
+          createdAt: data.createdAt,
+          ...data,
+          hasUnread: data.unreadBy?.includes(currentUser?.uid) || false
+        };
+      }) as Chat[];
+
+      // Set chats immediately to show something
+      setChats(chatsData);
+      setFilteredChats(chatsData);
+
+      // Then fetch users
+      const userPromises = chatsData.flatMap((chat) =>
+        chat.participants
+          .filter((uid) => uid !== currentUser.uid)
+          .map((userId) => fetchUser(userId))
       );
 
-      const unsubscribe = onSnapshot(q, async (snapshot) => {
-        console.log("Received chat snapshot with", snapshot.docs.length, "chats");
-        const fetchedChats = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Chat[];
+      const userResults = await Promise.all(userPromises);
+      const userMap = userResults.reduce((acc, user) => {
+        if (user) {
+          acc[user.id] = user;
+        }
+        return acc;
+      }, {} as { [key: string]: User });
 
-        // Set chats immediately to show something
-        setChats(fetchedChats);
-        setFilteredChats(fetchedChats);
+      setUsers(userMap);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching chats:", error);
+      setLoading(false);
+    });
 
-        // Then fetch users
-        const userPromises = fetchedChats.flatMap((chat) =>
-          chat.participants
-            .filter((uid) => uid !== currentUser.uid)
-            .map((userId) => fetchUser(userId))
-        );
-
-        const userResults = await Promise.all(userPromises);
-        const userMap = userResults.reduce((acc, user) => {
-          if (user) {
-            acc[user.id] = user;
-          }
-          return acc;
-        }, {} as { [key: string]: User });
-
-        setUsers(userMap);
-        setLoading(false);
-      }, (error) => {
-        console.error("Error fetching chats:", error);
-        setLoading(false);
-      });
-
-      return () => unsubscribe();
-    };
-
-    setLoading(true); // Ensure loading is true when starting fetch
-    fetchChats();
+    return () => unsubscribe();
   }, [currentUser]);
 
   const fetchUser = async (userId: string): Promise<User | null> => {

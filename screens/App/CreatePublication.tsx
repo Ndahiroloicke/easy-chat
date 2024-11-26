@@ -25,7 +25,6 @@ interface CreatePublicationProps {
 
 const validationSchema = Yup.object().shape({
   type: Yup.string().required("Please select offer or demand."),
-  category: Yup.string().required("Category is required."),
   subcategory: Yup.string().required("Subcategory is required."),
   city: Yup.string().required("City is required."),
   province: Yup.string().required("Province is required."),
@@ -39,6 +38,38 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileI
   const [selectedType, setSelectedType] = useState<"offer" | "demand" | null>(null);
   const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [showAgreementOptions, setShowAgreementOptions] = useState(false);
+  const [showSubcategoryOptions, setShowSubcategoryOptions] = useState(false);
+  const [selectedAgreement, setSelectedAgreement] = useState<string>("");
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>("");
+  const [showCityOptions, setShowCityOptions] = useState(false);
+  const [showProvinceOptions, setShowProvinceOptions] = useState(false);
+  const [showDistanceOptions, setShowDistanceOptions] = useState(false);
+  const [selectedDistance, setSelectedDistance] = useState<string>("");
+
+  const options = [
+    "INTERCAMBIO DE SERVICIOS",
+    "INTERCAMBIO DE PRODUCTOS-TRUEQUE",
+    "INTERCAMBIO DE SERVICIOS POR PRODUCTOS",
+    "VENTA DE SERVICIOS",
+    "VENTA DE PRODUCTOS"
+  ];
+
+  const cities = [
+    "City 1", "City 2",
+  ];
+
+  const provinces = [
+    "Province 1", "Province 2",
+  ];
+
+  const distanceOptions = [
+    { label: "0-5 km", value: "5" },
+    { label: "6-10 km", value: "10" },
+    { label: "11-20 km", value: "20" },
+    { label: "21-50 km", value: "50" },
+    { label: "50+ km", value: "50+" },
+  ];
 
   // Fetch user data when the component mounts
   useEffect(() => {
@@ -83,11 +114,10 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileI
       <TouchableOpacity onPress={onClose} style={styles.backButton}>
         <Ionicons name="arrow-back" size={24} color="black" />
       </TouchableOpacity>
-      <Text style={styles.pageTitle}>Post</Text>
+     
       <Formik
         initialValues={{
           type: "",
-          category: "",
           subcategory: "",
           city: "",
           province: "",
@@ -107,6 +137,9 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileI
           touched,
         }) => (
           <View style={styles.form}>
+            <View style={styles.questionContainer}>
+              <Text style={styles.questionText}>¿Estas ofertando o demandando?</Text>
+            </View>
             <View style={styles.typeContainer}>
               <TouchableOpacity
                 style={[
@@ -124,7 +157,7 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileI
                     selectedType === "offer" && styles.selectedText,
                   ]}
                 >
-                  Offer
+                  Oferta
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -143,90 +176,180 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileI
                     selectedType === "demand" && styles.selectedText,
                   ]}
                 >
-                  Demand
+                  Demanda
                 </Text>
               </TouchableOpacity>
             </View>
-            {touched.type && errors.type && (
-              <Text style={styles.errorText}>{errors.type}</Text>
-            )}
-            <Picker
-  selectedValue={values.category}
-  onValueChange={(itemValue: any) =>
-    setFieldValue("category", itemValue)
-  }
-  style={styles.picker}
->
-  <Picker.Item label="Select Category" value="" />
-  <Picker.Item label="Category 1" value="category1" />
-  <Picker.Item label="Category 2" value="category2" />
-</Picker>
-            {touched.category && errors.category && (
-              <Text style={styles.errorText}>{errors.category}</Text>
+
+            <View style={styles.questionContainer}>
+              <Text style={styles.questionText}>¿Qué tipo de acuerdo o negocio quieres hacer?</Text>
+            </View>
+
+            <TouchableOpacity
+              style={[
+                styles.pickerButton,
+                { marginBottom: showAgreementOptions ? 0 : 10 }
+              ]}
+              onPress={() => setShowAgreementOptions(!showAgreementOptions)}
+            >
+              <Text style={styles.pickerButtonText}>
+                {selectedAgreement || "ELIGE TU ACUERDO"}
+              </Text>
+              <Ionicons name="chevron-down" size={20} color="white" />
+            </TouchableOpacity>
+
+            {showAgreementOptions && (
+              <View style={styles.optionsContainer}>
+                {options.map((option, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.optionItem}
+                    onPress={() => {
+                      setFieldValue("agreement", option);
+                      setSelectedAgreement(option);
+                      setShowAgreementOptions(false);
+                    }}
+                  >
+                    <Text style={styles.optionText}>{option}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             )}
 
-            <Picker
-              selectedValue={values.subcategory}
-              onValueChange={(itemValue: any) =>
-                setFieldValue("subcategory", itemValue)
-              }
-              style={styles.picker}
-            >
-              <Picker.Item label="Select Subcategory" value="" />
-              <Picker.Item label="Subcategory 1" value="subcategory1" />
-              <Picker.Item label="Subcategory 2" value="subcategory2" />
-            </Picker>
             {touched.subcategory && errors.subcategory && (
               <Text style={styles.errorText}>{errors.subcategory}</Text>
             )}
 
-            <View style={styles.row}>
-              <Picker 
-                selectedValue={values.city}
-                onValueChange={(itemValue: any) =>
-                  setFieldValue("city", itemValue)
-                }
-                style={[styles.picker, styles.halfPicker]}
-              >
-                <Picker.Item label="Select City" value="" />
-                <Picker.Item label="City 1" value="city1" />
-                <Picker.Item label="City 2" value="city2" />
-              </Picker>
-              <Picker
-                selectedValue={values.province}
-                onValueChange={(itemValue: any) =>
-                  setFieldValue("province", itemValue)
-                }
-                style={[styles.picker, styles.halfPicker]}
-              >
-                <Picker.Item label="Select Province" value="" />
-                <Picker.Item label="Province 1" value="province1" />
-                <Picker.Item label="Province 2" value="province2" />
-              </Picker>
-            </View>
-            {touched.city && errors.city && (
-              <Text style={styles.errorText}>{errors.city}</Text>
-            )}
-            {touched.province && errors.province && (
-              <Text style={styles.errorText}>{errors.province}</Text>
+            <TouchableOpacity
+              style={[
+                styles.pickerButton,
+                { marginBottom: 15 }
+              ]}
+              onPress={() => setShowSubcategoryOptions(!showSubcategoryOptions)}
+            >
+              <Text style={styles.pickerButtonText}>
+                {selectedSubcategory || "Subcategorías"}
+              </Text>
+              <Ionicons name="chevron-down" size={20} color="white" />
+            </TouchableOpacity>
+
+            {showSubcategoryOptions && (
+              <View style={[styles.optionsContainer, { marginBottom: 15 }]}>
+                <TouchableOpacity
+                  style={styles.optionItem}
+                  onPress={() => {
+                    setFieldValue("subcategory", "subcategory1");
+                    setSelectedSubcategory("subcategory1");
+                    setShowSubcategoryOptions(false);
+                  }}
+                >
+                  <Text style={styles.optionText}>Subcategory 1</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.optionItem}
+                  onPress={() => {
+                    setFieldValue("subcategory", "subcategory2");
+                    setSelectedSubcategory("subcategory2");
+                    setShowSubcategoryOptions(false);
+                  }}
+                >
+                  <Text style={styles.optionText}>Subcategory 2</Text>
+                </TouchableOpacity>
+              </View>
             )}
 
-            <Picker
-              selectedValue={values.distance}
-              onValueChange={(itemValue: any) =>
-                setFieldValue("distance", itemValue)
-              }
-              style={styles.picker}
+            <View style={styles.row}>
+              <View style={styles.halfPicker}>
+                <TouchableOpacity
+                  style={styles.pickerButton}
+                  onPress={() => setShowCityOptions(!showCityOptions)}
+                >
+                  <Text style={styles.pickerButtonText}>
+                    {values.city || "Select City"}
+                  </Text>
+                  <Ionicons name="chevron-down" size={20} color="white" />
+                </TouchableOpacity>
+
+                {showCityOptions && (
+                  <View style={styles.optionsContainer}>
+                    {cities.map((city, index) => (
+                      <TouchableOpacity
+                        key={index}
+                        style={styles.optionItem}
+                        onPress={() => {
+                          setFieldValue("city", city);
+                          setShowCityOptions(false);
+                        }}
+                      >
+                        <Text style={styles.optionText}>{city}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                )}
+              </View>
+
+              <View style={styles.halfPicker}>
+                <TouchableOpacity
+                  style={styles.pickerButton}
+                  onPress={() => setShowProvinceOptions(!showProvinceOptions)}
+                >
+                  <Text style={styles.pickerButtonText}>
+                    {values.province || "Select Province"}
+                  </Text>
+                  <Ionicons name="chevron-down" size={20} color="white" />
+                </TouchableOpacity>
+
+                {showProvinceOptions && (
+                  <View style={styles.optionsContainer}>
+                    {provinces.map((province, index) => (
+                      <TouchableOpacity
+                        key={index}
+                        style={styles.optionItem}
+                        onPress={() => {
+                          setFieldValue("province", province);
+                          setShowProvinceOptions(false);
+                        }}
+                      >
+                        <Text style={styles.optionText}>{province}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                )}
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={[
+                styles.pickerButton, 
+                { 
+                  marginBottom: showDistanceOptions ? 0 : 15,
+                  marginTop: 15  // Added spacing above the distance picker
+                }
+              ]}
+              onPress={() => setShowDistanceOptions(!showDistanceOptions)}
             >
-              <Picker.Item label="Select Distance (km)" value="" />
-              <Picker.Item label="0-5 km" value="5" />
-              <Picker.Item label="6-10 km" value="10" />
-              <Picker.Item label="11-20 km" value="20" />
-              <Picker.Item label="21-50 km" value="50" />
-              <Picker.Item label="50+ km" value="50+" />
-            </Picker>
-            {touched.distance && errors.distance && (
-              <Text style={styles.errorText}>{errors.distance}</Text>
+              <Text style={styles.pickerButtonText}>
+                {selectedDistance || "Select Distance (km)"}
+              </Text>
+              <Ionicons name="chevron-down" size={20} color="white" />
+            </TouchableOpacity>
+
+            {showDistanceOptions && (
+              <View style={styles.optionsContainer}>
+                {distanceOptions.map((option, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.optionItem}
+                    onPress={() => {
+                      setFieldValue("distance", option.value);
+                      setSelectedDistance(option.value);
+                      setShowDistanceOptions(false);
+                    }}
+                  >
+                    <Text style={styles.optionText}>{option.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             )}
 
             <Text style={styles.label}>
@@ -253,7 +376,7 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileI
               {loading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.submitButtonText}>Create Announcement</Text>
+                <Text style={styles.submitButtonText}>PUBLICAR</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -291,6 +414,8 @@ const styles = StyleSheet.create({
   typeContainer: {
     flexDirection: "row",
     marginBottom: 20,
+    width: '100%',
+    justifyContent: 'space-between',
   },
   typeButton: {
     flex: 1,
@@ -299,17 +424,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     alignItems: "center",
+    backgroundColor: '#4AA3F2',
+    borderColor: '#4AA3F2',
   },
   selectedButton: {
-    backgroundColor: "#2196F3",
-    borderColor: "#2196F3",
+    backgroundColor: '#6B3FA0',
+    borderColor: '#6B3FA0',
   },
   typeText: {
     fontSize: 16,
-    color: "#000",
+    color: 'white',
   },
   selectedText: {
-    color: "#fff",
+    color: 'white',
   },
   picker: {
     width: "100%",
@@ -351,13 +478,57 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 15,
     borderRadius: 10,
-    backgroundColor: "#2196F3",
+    backgroundColor: "#FF9F43",
     alignItems: "center",
     marginTop: 20,
   },
   submitButtonText: {
     color: "#fff",
     fontSize: 16,
+  },
+  questionContainer: {
+    backgroundColor: '#6B3FA0',
+    padding: 15,
+    borderRadius: 8,
+    width: '100%',
+    marginBottom: 15,
+  },
+  questionText: {
+    color: 'white',
+    fontSize: 15,
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  pickerButton: {
+    backgroundColor: '#4AA3F2',
+    padding: 15,
+    borderRadius: 8,
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  pickerButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  optionsContainer: {
+    width: '100%',
+    marginBottom: 10,
+  },
+  optionItem: {
+    backgroundColor: '#FF9F43',
+    padding: 15,
+    marginVertical: 2,
+    borderRadius: 8,
+  },
+  optionText: {
+    color: 'white',
+    fontSize: 14,
+    textAlign: 'center',
+    fontWeight: '500',
   },
 });
 
