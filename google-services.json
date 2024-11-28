@@ -1,0 +1,39 @@
+{
+    "project_info": {
+      "project_number": "881274176774",
+      "project_id": "launez-54b3a",
+      "storage_bucket": "launez-54b3a.appspot.com"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:881274176774:android:c05d40daa04ebc893f0a87",
+          "android_client_info": {
+            "package_name": "com.loic6.esychat"
+          }
+        },
+        "oauth_client": [
+          {
+            "client_id": "881274176774-dbnc0156hu4u09vvbj5r3vmb81tt5t9d.apps.googleusercontent.com",
+            "client_type": 3
+          }
+        ],
+        "api_key": [
+          {
+            "current_key": "AIzaSyCqrSgVHcvb36iMN1MNvJYhX7cYCKrlRTY"
+          }
+        ],
+        "services": {
+          "appinvite_service": {
+            "other_platform_oauth_client": [
+              {
+                "client_id": "881274176774-dbnc0156hu4u09vvbj5r3vmb81tt5t9d.apps.googleusercontent.com",
+                "client_type": 3
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "configuration_version": "1"
+  }

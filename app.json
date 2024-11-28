@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "936375dc-9e9b-4b14-8fb1-eded2487da1d"
+      }
+    },
+    "owner": "loic6",
+    "android": {
+      "package": "com.loic6.esychat",
+      "runtimeVersion": "1.0.0"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/936375dc-9e9b-4b14-8fb1-eded2487da1d"
+    },
+    "ios": {
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
+    }
+  }
+}
