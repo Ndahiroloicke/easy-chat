@@ -24,14 +24,14 @@ interface CreatePublicationProps {
 }
 
 const validationSchema = Yup.object().shape({
-  type: Yup.string().required("Please select offer or demand."),
-  subcategory: Yup.string().required("Subcategory is required."),
-  city: Yup.string().required("City is required."),
-  province: Yup.string().required("Province is required."),
-  distance: Yup.number().required("Distance is required."),
+  type: Yup.string().required("Por favor selecciona oferta o demanda."),
+  subcategory: Yup.string().required("La subcategoría es requerida."),
+  city: Yup.string().required("La ciudad es requerida."),
+  province: Yup.string().required("La provincia es requerida."),
+  distance: Yup.number().required("La distancia es requerida."),
   description: Yup.string()
-    .min(10, "Description must be at least 10 characters.")
-    .required("Description is required."),
+    .min(10, "La descripción debe tener al menos 10 caracteres.")
+    .required("La descripción es requerida."),
 });
 
 const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileImage }) => {
@@ -265,7 +265,7 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileI
                   onPress={() => setShowCityOptions(!showCityOptions)}
                 >
                   <Text style={styles.pickerButtonText}>
-                    {values.city || "Select City"}
+                    {values.city || "Ciudad"}
                   </Text>
                   <Ionicons name="chevron-down" size={20} color="white" />
                 </TouchableOpacity>
@@ -294,7 +294,7 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileI
                   onPress={() => setShowProvinceOptions(!showProvinceOptions)}
                 >
                   <Text style={styles.pickerButtonText}>
-                    {values.province || "Select Province"}
+                    {values.province || "Provincia"}
                   </Text>
                   <Ionicons name="chevron-down" size={20} color="white" />
                 </TouchableOpacity>
@@ -329,7 +329,7 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileI
               onPress={() => setShowDistanceOptions(!showDistanceOptions)}
             >
               <Text style={styles.pickerButtonText}>
-                {selectedDistance || "Select Distance (km)"}
+                {selectedDistance || "Seleccionar Distancia (km)"}
               </Text>
               <Ionicons name="chevron-down" size={20} color="white" />
             </TouchableOpacity>
@@ -353,8 +353,8 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileI
             )}
 
             <Text style={styles.label}>
-              WRITE YOUR AD WITH KEYWORDS USING WHICH OTHERS USERS WILL BE ABLE
-              TO FIND YOU THROUGH THE PROGRAMMED FILTER:
+              ESCRIBE TU ANUNCIO CON PALABRAS CLAVE QUE OTROS USUARIOS PODRÁN 
+              USAR PARA ENCONTRARTE A TRAVÉS DEL FILTRO PROGRAMADO:
             </Text>
             <TextInput
               multiline
@@ -376,7 +376,7 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileI
               {loading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.submitButtonText}>PUBLICAR</Text>
+                <Text style={styles.submitButtonText}>Crear Anuncio</Text>
               )}
             </TouchableOpacity>
           </View>
