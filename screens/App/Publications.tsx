@@ -88,22 +88,24 @@ const Publications: React.FC<PublicationsProps> = ({ openAdvertisement }) => {
 
   const applyFilters = () => {
     const filtered = publications.filter((publication) => {
-      return (
-        (publication.type.toLowerCase().match(type.toLowerCase())) &&
-        (publication.category.toLowerCase().match(category.toLowerCase())) &&
-        (publication.subcategory.toLowerCase().match(subcategory.toLowerCase())) &&
-        (publication.city.toLowerCase().match(city.toLowerCase())) &&
-        (publication.province.toLowerCase().match(province.toLowerCase())) &&
-        (publication.distance.toLowerCase().match(distance.toLowerCase())) 
+      const typeCheck = publication.type ? publication.type.toLowerCase().includes(type.toLowerCase()) : false;
+      const categoryCheck = publication.category ? publication.category.toLowerCase().includes(category.toLowerCase()) : false;
+      const subcategoryCheck = publication.subcategory ? publication.subcategory.toLowerCase().includes(subcategory.toLowerCase()) : false;
+      const cityCheck = publication.city ? publication.city.toLowerCase().includes(city.toLowerCase()) : false;
+      const provinceCheck = publication.province ? publication.province.toLowerCase().includes(province.toLowerCase()) : false;
+      const distanceCheck = publication.distance ? publication.distance.toLowerCase().includes(distance.toLowerCase()) : false;
 
+      // Log the checks for debugging
+      console.log({
+        typeCheck,
+        categoryCheck,
+        subcategoryCheck,
+        cityCheck,
+        provinceCheck,
+        distanceCheck,
+      });
 
-        // (!type || publication.type === type) &&
-        // (!category || publication.category === category) &&
-        // (!subcategory || publication.subcategory === subcategory) &&
-        // (!city || publication.city === city) &&
-        // (!province || publication.province === province) &&
-        // (!distance || publication.distance === distance)
-      );
+      return typeCheck && categoryCheck && subcategoryCheck && cityCheck && provinceCheck && distanceCheck;
     });
 
     setFilteredPublications(filtered);
