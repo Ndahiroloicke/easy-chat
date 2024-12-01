@@ -13,11 +13,7 @@ import {
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { Picker } from "@react-native-picker/picker";
-<<<<<<< HEAD
 import { collection, addDoc, serverTimestamp, doc, getDoc } from "firebase/firestore";
-=======
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
->>>>>>> 9a3d33c813906323c0ec4ebe0e0fd49b72c70232
 import { auth, db } from "../../utils/firebase.config";
 import { Ionicons } from "@expo/vector-icons";
 import { getUserData } from "../../utils/AuthStorage";
@@ -81,17 +77,12 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileI
       try {
         const userData = await getUserData();
         if (userData) {
-<<<<<<< HEAD
           const userDoc = await getDoc(doc(db, "users", auth.currentUser?.uid || ""));
           const userProfile = userDoc.data()?.profile || "";
           setCurrentUser({ 
             ...userData as User,
             profile: userProfile 
           });
-=======
-          setCurrentUser(userData as User);
-          console.log(currentUser?.profile);
->>>>>>> 9a3d33c813906323c0ec4ebe0e0fd49b72c70232
         }
       } catch (error) {
         console.error("Failed to fetch current user:", error);
@@ -111,10 +102,7 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileI
         updatedAt: serverTimestamp(),
       };
 
-<<<<<<< HEAD
       console.log("Document Data:", docData);
-=======
->>>>>>> 9a3d33c813906323c0ec4ebe0e0fd49b72c70232
       await addDoc(collection(db, "advertisements"), docData);
       ToastAndroid.show("Announcement created successfully!", ToastAndroid.SHORT);
       onClose();
@@ -155,8 +143,18 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileI
         }) => (
           <View style={styles.form}>
             <View style={styles.questionContainer}>
-              <Text style={styles.questionText}>¿Estas ofertando o demandando?</Text>
+              <Text style={styles.questionText}>¿Qué tipo de acuerdo o negocio quieres hacer?</Text>
             </View>
+            <TouchableOpacity
+              style={[styles.pickerButton, { marginBottom: 10 }]}
+              onPress={() => setShowAgreementOptions(!showAgreementOptions)}
+            >
+              <Text style={styles.pickerButtonText}>
+                {selectedAgreement || "ELIGE TU ACUERDO"}
+              </Text>
+              <Ionicons name="chevron-down" size={20} color="white" />
+            </TouchableOpacity>
+
             <View style={styles.typeContainer}>
               <TouchableOpacity
                 style={[
@@ -197,41 +195,6 @@ const CreatePublication: React.FC<CreatePublicationProps> = ({ onClose, profileI
                 </Text>
               </TouchableOpacity>
             </View>
-
-            <View style={styles.questionContainer}>
-              <Text style={styles.questionText}>¿Qué tipo de acuerdo o negocio quieres hacer?</Text>
-            </View>
-
-            <TouchableOpacity
-              style={[
-                styles.pickerButton,
-                { marginBottom: showAgreementOptions ? 0 : 10 }
-              ]}
-              onPress={() => setShowAgreementOptions(!showAgreementOptions)}
-            >
-              <Text style={styles.pickerButtonText}>
-                {selectedAgreement || "ELIGE TU ACUERDO"}
-              </Text>
-              <Ionicons name="chevron-down" size={20} color="white" />
-            </TouchableOpacity>
-
-            {showAgreementOptions && (
-              <View style={styles.optionsContainer}>
-                {options.map((option, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.optionItem}
-                    onPress={() => {
-                      setFieldValue("agreement", option);
-                      setSelectedAgreement(option);
-                      setShowAgreementOptions(false);
-                    }}
-                  >
-                    <Text style={styles.optionText}>{option}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
 
             {touched.subcategory && errors.subcategory && (
               <Text style={styles.errorText}>{errors.subcategory}</Text>

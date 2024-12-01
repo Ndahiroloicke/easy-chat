@@ -142,10 +142,7 @@ const ChatConversation: React.FC<ChatConversationProps> = ({ chatId: initialChat
     createChatIfNotExists();
     console.log(auth.currentUser?.displayName);
     fetchMessages(chatId);
-<<<<<<< HEAD
     console.log(currentUser?.profile)
-=======
->>>>>>> 9a3d33c813906323c0ec4ebe0e0fd49b72c70232
     console.log(chatId);
   }, [userId, chatId]);
   

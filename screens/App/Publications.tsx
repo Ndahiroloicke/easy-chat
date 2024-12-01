@@ -13,6 +13,8 @@ import { Picker } from "@react-native-picker/picker";
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { db } from "../../utils/firebase.config";
 import { COLORS } from "../../constants";
+import { Ionicons } from '@expo/vector-icons';
+// import Icon from 'react-native-vector-icons/FontAwesome';
 
 interface Publication {
   id: string;
@@ -49,6 +51,10 @@ const Publications: React.FC<PublicationsProps> = ({ openAdvertisement }) => {
   const [type, setType] = useState("");
   const [province, setProvince] = useState("");
   const [distance, setDistance] = useState("");
+  const [selectedType, setSelectedType] = useState<string>("");
+  const [isPickerVisible, setPickerVisible] = useState<boolean>(false);
+  const [showSubcategoryOptions, setShowSubcategoryOptions] = useState<boolean>(false);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>("");
 
   useEffect(() => {
     const fetchPublications = async () => {
@@ -118,7 +124,25 @@ const Publications: React.FC<PublicationsProps> = ({ openAdvertisement }) => {
     setProvince("");
     setDistance("");
     setFilteredPublications(publications);// Reset to all publications
-};
+    setShowSubcategoryOptions(false); // Collapse the dropdown
+  };
+
+  const handleSubcategorySelect = (subcategory: string) => {
+    setSelectedSubcategory(subcategory);
+    setShowSubcategoryOptions(false); // Hide options after selection
+
+    // Filter publications based on selected subcategory
+    const filtered = publications.filter((publication) =>
+      publication.subcategory.toLowerCase() === subcategory.toLowerCase()
+    );
+    setFilteredPublications(filtered);
+  };
+
+  const clearFilter = () => {
+    setSelectedSubcategory(""); // Reset selected subcategory
+    setFilteredPublications(publications); // Show all publications
+    setShowSubcategoryOptions(false); // Collapse the dropdown
+  };
 
   const renderPublicationItem = ({ item }: { item: Publication }) => (
     <View style={styles.publicationContainer}>
@@ -149,121 +173,36 @@ const Publications: React.FC<PublicationsProps> = ({ openAdvertisement }) => {
         <Text style={styles.loadingText}>Loading publications...</Text>
       ) : (
         <>
-          {/* Filter Button */}
+          {/* Filter Button for Subcategory */}
           <TouchableOpacity
             style={styles.filterButton}
-            onPress={() => {
-              setmodelvisible(true);
-              setShowFilters(!showFilters);
-            }}
+            onPress={() => setShowSubcategoryOptions(!showSubcategoryOptions)} // Toggle options
           >
-            <Text style={styles.filterButtonText}>
-              {showFilters ? "Hide Filters" : "Show Filters"}
-            </Text>
+            <View style={styles.filterButtonContent}>
+              <Text style={styles.filterButtonText}>
+                {selectedSubcategory || "Búsqueda Según Categoría"}
+              </Text>
+              <Ionicons name={showSubcategoryOptions ? "chevron-up" : "chevron-down"} size={20} color="#fff" style={styles.icon} />
+            </View>
           </TouchableOpacity>
 
-          {/* Collapsible Filter Form */}
-          {showFilters && (
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={modalvisible}
-              onRequestClose={() => setmodelvisible(false)}
-            >
-              <View style={styles.filterContainer}>
-                <Picker
-                  selectedValue={type}
-                  onValueChange={(value) => setType(value)}
-                  style={[styles.picker, styles.halfPicker]}
-                >
-                  <Picker.Item label="Select Type" value="" />
-                  <Picker.Item label="Offer" value="offer" />
-                  <Picker.Item label="Demand" value="demand" />
-                  {/* Add more categories as needed */}
-                </Picker>
-
-                <Picker
-                  selectedValue={category}
-                  onValueChange={(value) => setCategory(value)}
-                  style={[styles.picker, styles.halfPicker]}
-                >
-                  <Picker.Item label="Select Category" value="" />
-                  <Picker.Item label="Category 1" value="Category1" />
-                  <Picker.Item label="Category 2" value="Category2" />
-                  {/* Add more subcategories as needed */}
-                </Picker>
-                <Picker
-                  selectedValue={subcategory}
-                  onValueChange={(value) => setSubcategory(value)}
-                  style={styles.dropdown}
-                >
-                  <Picker.Item label="Select Subcategory" value="" />
-                  <Picker.Item label="Subcategory 1" value="Subcategory1" />
-                  <Picker.Item label="Subcategory 2" value="Subcategory2" />
-                  {/* Add more subcategories as needed */}
-                </Picker>
-                <View style={styles.row}>
-                <Picker
-                  selectedValue={city}
-                  onValueChange={(value) => setCity(value)}
-                  style={[styles.picker, styles.halfPicker]}
-                >
-                  <Picker.Item label="Select City" value="" />
-                  <Picker.Item label="City 1" value="City1" />
-                  <Picker.Item label="City 2" value="City2" />
-                  {/* Add more subcategories as needed */}
-                </Picker>
-                <Picker
-                  selectedValue={province}
-                  onValueChange={(value) => setProvince(value)}
-                  style={[styles.picker, styles.halfPicker]}
-                >
-                  <Picker.Item label="Select Province" value="" />
-                  <Picker.Item label="Province 1" value="Province1" />
-                  <Picker.Item label="Province 2" value="Province2" />
-                  {/* Add more subcategories as needed */}
-                </Picker>
-                </View>
-                <Picker
-                  selectedValue={distance}
-                  onValueChange={(value) => setDistance(value)}
-                  style={styles.dropdown}
-                >
-                  <Picker.Item label="Select Distance (km)" value="" />
-                  <Picker.Item label="0-5 km" value="5" />
-                  <Picker.Item label="6-10 km" value="10" />
-                  <Picker.Item label="11-20 km" value="20" />
-                  <Picker.Item label="21-50 km" value="50" />
-                  <Picker.Item label="50+ km" value="50+" />
-                  {/* Add more subcategories as needed */}
-                </Picker>
-
-                {/* Apply Filter Button */}
-                <View style={styles.row}>
-                <TouchableOpacity
-                  style={styles.halfButton}
-                  onPress={clearFilters}
-                >
-                  <Text style={styles.searchButtonText}>Clear filters</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.halfButton}
-                  onPress={() => {
-                    setmodelvisible(false);
-                    setShowFilters(false);
-                  }}
-                >
-                  <Text style={styles.searchButtonText}>Close</Text>
-                </TouchableOpacity>
-                </View>
-                <TouchableOpacity
-                  style={styles.searchButton}
-                  onPress={applyFilters}
-                >
-                  <Text style={styles.searchButtonText}>Apply Filters</Text>
-                </TouchableOpacity>
-              </View>
-            </Modal>
+          {/* Subcategory Options */}
+          {showSubcategoryOptions && (
+            <View style={styles.subcategoryOptions}>
+              <TouchableOpacity onPress={() => handleSubcategorySelect("subcategory1")}>
+                <Text style={styles.subcategoryText}>Subcategory 1</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleSubcategorySelect("subcategory2")}>
+                <Text style={styles.subcategoryText}>Subcategory 2</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => {
+                setSelectedSubcategory(""); // Clear selection
+                setFilteredPublications(publications); // Show all publications
+                setShowSubcategoryOptions(false); // Collapse the dropdown
+              }}>
+                <Text style={styles.subcategoryText}>Clear Filter</Text>
+              </TouchableOpacity>
+            </View>
           )}
 
           {/* Publications List or No Results Message */}
@@ -299,8 +238,8 @@ const styles = StyleSheet.create({
   filterButton: {
     backgroundColor: "#58A9FF",
     borderRadius: 8,
-    paddingVertical: 12,
-    alignItems: "center",
+    paddingVertical: 15,
+    paddingHorizontal: 10,
     marginBottom: 10,
   },
   filterButtonText: {
@@ -422,6 +361,48 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 4,
+  },
+  typeSelectionContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  typeBox: {
+    // flex: 1,
+    width:'46%',
+    backgroundColor: "#58A9FF",
+    borderRadius: 8,
+    padding: 15,
+    alignItems: "center",
+  },
+  selectedTypeBox: {
+    backgroundColor: "#800080",
+  },
+  typeText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  filterButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  icon: {
+    marginLeft: 8,
+  },
+  subcategoryOptions: {
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    padding: 10,
+  },
+  subcategoryText: {
+    fontSize: 16,
+    color: "#333",
+    padding: 5,
   },
 });
 
