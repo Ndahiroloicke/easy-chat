@@ -35,15 +35,15 @@ const MenuModal: React.FC<MenuModalProps> = ({ visible, onClose }) => {
         routes: [{ name: 'Auth', params: { screen: 'Login' } }],
       });
 
-      ToastAndroid.show('Signed out successfully', ToastAndroid.SHORT);
+      ToastAndroid.show('Cerrado sesión con éxito', ToastAndroid.SHORT);
     } catch (error) {
       console.error('Error signing out:', error);
-      ToastAndroid.show('Error signing out', ToastAndroid.SHORT);
+      ToastAndroid.show('Error al cerrar sesión', ToastAndroid.SHORT);
     }
   };
 
   const handlePress = async (name: string) => {
-    if (name === 'Sign out') {
+    if (name === 'Cerrar sesión') {
       await handleSignOut();
     } else {
       console.log(`${name} clicked`);
@@ -52,12 +52,12 @@ const MenuModal: React.FC<MenuModalProps> = ({ visible, onClose }) => {
   };
 
   const menuItems = [
-    { id: '1', name: 'Profile', icon: <MaterialIcons name="person" size={24} color="#000" /> },
+    { id: '1', name: 'Perfil', icon: <MaterialIcons name="person" size={24} color="#000" /> },
     { id: '2', name: 'Chat', icon: <Entypo name="chat" size={24} color="#000" /> },
-    { id: '3', name: 'Communication', icon: <Entypo name="message" size={24} color="#000" /> },
-    { id: '4', name: 'Announcements', icon: <Entypo name="megaphone" size={24} color="#000" /> },
-    { id: '5', name: 'Publications', icon: <Entypo name="book" size={24} color="#000" /> },
-    { id: '6', name: 'Sign out', icon: <Entypo name="log-out" size={24} color="#000" /> },
+    { id: '3', name: 'Comunicación', icon: <Entypo name="message" size={24} color="#000" /> },
+    { id: '4', name: 'Anuncios', icon: <Entypo name="megaphone" size={24} color="#000" /> },
+    { id: '5', name: 'Publicaciones', icon: <Entypo name="book" size={24} color="#000" /> },
+    { id: '6', name: 'Cerrar sesión', icon: <Entypo name="log-out" size={24} color="#000" /> },
   ];
 
   return (
