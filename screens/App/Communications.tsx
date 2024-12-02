@@ -187,6 +187,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    marginTop:-30
   },
   myProfileContainer: {
     flexDirection: "row",
@@ -218,8 +219,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   searchContainer: {
-    paddingHorizontal: 15,
-    paddingVertical: 10,
+    paddingHorizontal: 1,
+    paddingVertical: 5,
     backgroundColor: '#fff',
     marginBottom: 10,
   },
@@ -227,7 +228,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f0f0f0',
-    borderRadius: 10,
+    borderRadius: 5,
     paddingHorizontal: 10,
     height: 40,
   },

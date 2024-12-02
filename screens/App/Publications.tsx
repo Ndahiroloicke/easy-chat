@@ -235,7 +235,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f9f9f9",
-    padding: 10,
+    paddingHorizontal: 10,
+    marginTop:-12,
   },
   filterButton: {
     backgroundColor: "#58A9FF",
@@ -286,7 +287,7 @@ const styles = StyleSheet.create({
   loadingText: {
     textAlign: "center",
     marginTop: 20,
-    fontSize: 16,
+    fontSize: 14,
     color: "#999",
   },
   listContent: {
@@ -312,7 +313,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   descriptionText: {
-    fontSize: 14,
+    fontSize: 12,
     color: "#333",
   },
   iconButton: {
@@ -359,7 +360,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   creatorText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 4,
