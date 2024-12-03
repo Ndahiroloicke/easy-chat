@@ -242,7 +242,7 @@ const Chats: React.FC<ChatsProps> = ({ openChat }) => {
     <View style={styles.container}>
       <TextInput
         style={styles.searchInput}
-        placeholder="Search chats or messages"
+        placeholder="buscar chats o mensajes"
         value={searchQuery}
         onChangeText={handleSearch}
       />
@@ -264,7 +264,7 @@ const Chats: React.FC<ChatsProps> = ({ openChat }) => {
         ) : filteredChats.length === 0 ? (
           <View style={styles.noChatsContainer}>
             <Text style={styles.noChatsText}>
-              You have no chats. Start a conversation with someone!
+            No tienes chats. ¡Inicia una conversación con alguien!
             </Text>
           </View>
         ) : (
@@ -293,9 +293,11 @@ const styles = StyleSheet.create({
     padding: 10,
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 20,
+    borderRadius: 12,
     margin: 5,
+    marginTop:-5,
     marginBottom: 10,
+    height:45,
     backgroundColor: COLORS.white,
   },
   chatContainer: {

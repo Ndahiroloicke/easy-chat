@@ -23,7 +23,7 @@
     "expo-camera": "~15.0.10",
     "expo-dev-client": "~4.0.29",
     "expo-face-detector": "~12.7.1",
-    "expo-font": "~12.0.6",
+    "expo-font": "~12.0.10",
     "expo-image-picker": "~15.0.5",
     "expo-print": "^13.0.1",
     "expo-secure-store": "^13.0.1",

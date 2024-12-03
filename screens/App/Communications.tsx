@@ -227,7 +227,9 @@ const styles = StyleSheet.create({
   searchInputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#fff',
+    borderBlockColor:"#ccc",
+    borderWidth:1,
     borderRadius: 5,
     paddingHorizontal: 10,
     height: 40,
