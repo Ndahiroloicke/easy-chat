@@ -146,12 +146,18 @@ const HomeScreen = () => {
       default:
         return null;
     }
+
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image source={images.back} style={styles.backButton} />
+        <TouchableOpacity>
+          <View style={styles.iconContainer}>
+            <Feather name="menu" size={24} color="#fff" />
+          </View>
+        </TouchableOpacity>
+       
         <View style={styles.titleContainer}>
           <Image source={images.logo} style={styles.logo} />
           <Text style={[styles.title, {fontFamily:'Lobster'} , {color:"orange", fontWeight:100}]}>Esy</Text>
@@ -364,6 +370,14 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     marginLeft: 10,
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 5,
   },
 });
 
