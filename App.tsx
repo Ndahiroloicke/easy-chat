@@ -10,6 +10,7 @@ import {
   signInWithCustomToken,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+// this is the importing part of the codes
 
 import AppNavigator from "./Navigation/AppNavigator";
 import { ThemeProvider } from "./Themes/ThemeProvider";
