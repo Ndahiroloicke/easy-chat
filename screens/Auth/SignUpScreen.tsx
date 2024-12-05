@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   title: {
-    fontSize: 40,
+    fontSize: 32,
     fontFamily: "Bold",
   },
   titleYellow: {
@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
   },
   subHeader: {
-    fontSize: 24,
+    fontSize: 20,
     fontFamily: "Semibold",
     color: COLORS.black,
     textAlign: "center",
@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 14,
     color: COLORS.black,
   },
   gridContainer: {
@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: COLORS.danger,
-    fontSize: 12,
+    fontSize: 10,
     marginBottom: 10,
   },
   buttonContainer: {
@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   redirectText: {
-    fontSize: 16,
+    fontSize: 14,
     color: COLORS.black,
   },
   redirectLink: {

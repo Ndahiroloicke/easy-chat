@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Entypo from "@expo/vector-icons/Entypo";
+import { ScrollView } from "react-native";
 
 import {
   View,
@@ -22,6 +23,7 @@ import CreatePublication from "./CreatePublication";
 import Publications from "./Publications";
 import MenuModal from "./MenuModal";
 import AdvertisementDetails from "./AdvertisementDetails";
+import { useFonts } from 'expo-font';
 
 const HomeScreen = () => {
   const [menuVisible, setMenuVisible] = useState(false);
@@ -72,7 +74,12 @@ const HomeScreen = () => {
     checkChats();
   }, [user]);
 
-  if (loading) {
+  const [fontsLoaded] = useFonts({
+    'Lobster': require('../../assets/fonts/Lobster-Regular.ttf'),
+    'Robert' : require('../../assets/fonts/Birthstone-Regular.ttf'),
+  });
+
+  if (!fontsLoaded) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
@@ -139,16 +146,22 @@ const HomeScreen = () => {
       default:
         return null;
     }
+
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image source={images.back} style={styles.backButton} />
-        <View style={[styles.titleContainer, { flex: 1 }, {marginTop:25}]}>
+        <TouchableOpacity>
+          <View style={styles.iconContainer}>
+            <Feather name="menu" size={24} color="#fff" />
+          </View>
+        </TouchableOpacity>
+       
+        <View style={styles.titleContainer}>
           <Image source={images.logo} style={styles.logo} />
-          <Text style={[styles.title, styles.titleYellow]}>Esy</Text>
-          <Text style={[styles.title, { color: COLORS.white }]}>Chat</Text>
+          <Text style={[styles.title, {fontFamily:'Lobster'} , {color:"orange", fontWeight:100}]}>Esy</Text>
+          <Text style={[styles.title, { fontFamily: 'Lobster' }, { color: "#007bff"} ]}>chat</Text>
         </View>
         <TouchableOpacity onPress={toggleMenu}>
           <Entypo name="dots-three-vertical" size={24} color="#fff" />
@@ -156,90 +169,59 @@ const HomeScreen = () => {
         <MenuModal visible={menuVisible} onClose={toggleMenu}></MenuModal>
       </View>
       {activeTab !== "achat" && activeTab !== "add-publication" && (
-        <View style={{flex:1, flexDirection:'row', maxHeight:130}}>
-          <TouchableOpacity style={{marginTop:19, marginRight:9, justifyContent:"flex-start"}} onPress={() => setActiveTab("communication")}>
-            <View style={{flex:1, flexDirection:"column",alignItems:"center"}}>
-              <View
-                style={{
-                  padding: 5,
-                  backgroundColor: COLORS.gray,
-                  borderRadius: 100,
-                  width: 60,
-                  height: 60,
-                  alignItems:"center",
-                  marginTop:-10,
-                  justifyContent:"center"
-                }}
-              >
-                <Image source={images.profile} />
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ maxHeight: 130 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop:-30 }}>
+            <TouchableOpacity style={{ marginTop: 19, marginRight: 9, justifyContent: "flex-start" }} onPress={() => setActiveTab("communication")}>
+              <View style={{flex:1, flexDirection:"column",alignItems:"center"}}>
+                <View
+                  style={{
+                    padding: 5,
+                    backgroundColor: COLORS.gray,
+                    borderRadius: 100,
+                    width: 60,
+                    height: 60,
+                    alignItems:"center",
+                    marginTop:15,
+                    justifyContent:"center"
+                  }}
+                >
+                  <Image source={images.profile} />
+                </View>
+                <Text style={{marginTop:17}}>{currentUser?.name}</Text>
               </View>
-              <Text style={{marginTop:12}}>{currentUser?.name}</Text>
+            </TouchableOpacity>
+            <View style={styles.tabContainer}>
+              <TouchableOpacity
+                style={[styles.tabButton, activeTab === "communication" && styles.activeTab]}
+                onPress={() => setActiveTab("communication")}
+              >
+                <Image source={images.communication} style={styles.tabIcon} />
+                <Text style={styles.tabText}>Comunicación</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.tabButton, activeTab === "chats" && styles.activeTab]}
+                onPress={() => setActiveTab("chats")}
+              >
+                <Image source={images.chats} style={styles.tabIcon} />
+                <Text style={styles.tabText}>Chats</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.tabButton, activeTab === "advertisements" && styles.activeTab]}
+                onPress={() => setActiveTab("advertisements")}
+              >
+                <Image source={images.advertisements} style={styles.tabIcon} />
+                <Text style={styles.tabText}>Anuncios</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.tabButton, activeTab === "add-publication" && styles.activeTab]}
+                onPress={() => setActiveTab("add-publication")}
+              >
+                <Image source={images.edit} style={styles.tabIcon} />
+                <Text style={styles.tabText}>Publicar</Text>
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
-          <View style={{height:100,alignItems:"center"}}>
-            <TouchableOpacity
-              style={[
-                activeTab === "communication" ? styles.activeButton : styles.button,{
-                  marginTop:6
-                }
-              ]}
-              onPress={() => setActiveTab("communication")}
-            >
-              <Image source={images.communication} style={styles.tabIcon} />
-              {activeTab === "communication" ? <Text style={{color:"white",marginTop:15, width:60}}>Comunicación</Text> : <Text style={{color:"black"}}></Text>}
-            </TouchableOpacity>
-            {activeTab != "communication" && <Text style={{color:"black"}}>Comunicación</Text>}
           </View>
-          <View style={{height:100,alignItems:"center"}}>
-            <TouchableOpacity
-              style={[
-                activeTab === "chats"  ? styles.activeButton : styles.button ,{
-                  paddingHorizontal:20,
-                  marginTop:7
-                }
-              ]}
-              onPress={() => setActiveTab("chats")}
-            >
-              <Image source={images.chats} style={styles.tabIcon} />
-              {activeTab === "chats" ? <Text style={{color:"white",marginTop:20}}>Chats</Text> : <Text></Text>}
-            </TouchableOpacity>
-            {activeTab != "chats" && <Text style={{color:"black"}}>Chats</Text>}
-          </View>
-          <View style={{height:100,alignItems:"center"}}>
-            <TouchableOpacity
-              style={[
-                { backgroundColor: COLORS.secondaryBlue },
-                activeTab === "advertisements" ? styles.activeButton : styles.button,{
-                  paddingHorizontal:20,
-                  marginTop:7
-                }
-              ]}
-              onPress={() => setActiveTab("advertisements")}
-            >
-              <Image source={images.advertisements} style={styles.tabIcon} />
-              {activeTab === "advertisements" ? <Text style={{color:"white",marginTop:15, fontWeight:500}}>Anuncios</Text> : <Text></Text>}
-            </TouchableOpacity>
-            {activeTab != "advertisements" && <Text style={{color:"black"}}>Anuncios</Text>}
-          </View>
-          <TouchableOpacity style={{marginTop:19,}} onPress={() => setActiveTab("add-publication")}>
-            <View
-              style={{
-                padding: 5,
-                marginLeft:9,
-                backgroundColor: COLORS.gray,
-                borderRadius: 100,
-                width: 60,
-                height: 60,
-                marginTop:-10,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Image source={images.edit} style={styles.tabIcon} />
-            </View>
-            <Text style={{marginTop:12}}>Publicación</Text>
-          </TouchableOpacity>
-        </View>
+        </ScrollView>
       )}
       <View style={styles.contentContainer}>{renderContent()}</View>
     </View>
@@ -256,28 +238,32 @@ const styles = StyleSheet.create({
     paddingVertical: 25,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent:"space-between",
     backgroundColor: COLORS.primary,
     borderBottomLeftRadius: 40,
     borderBottomRightRadius: 40,
-    marginBottom: 20,
+    marginBottom: 5,
   },
   backButton: {
     width: 30,
     height: 30,
   },
   titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    display:"flex",
+    flexDirection:"row",
+    alignItems:"center",
+    width:"auto",
+    justifyContent:"space-between"
   },
   logo: {
-    width: 80,
-    height: 80,
-    marginRight: 10,
+    width: 50,
+    height: 50,
+    marginRight: 5,
   },
   title: {
-    fontSize: 40,
-    fontFamily: "Bold",
+    fontSize: 34,
+    fontFamily: "Poppins",
+    color: "#000",
   },
   titleYellow: {
     color: COLORS.yellow,
@@ -292,27 +278,29 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     paddingVertical: 10,
-    alignItems: "center",
-    paddingHorizontal: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
+    backgroundColor: "#fff",
   },
-  tabcontainehome:{
-    flexDirection: "row",
-    justifyContent: "space-around",
-    paddingVertical: 10,
-    alignItems: "flex-end",
-    paddingHorizontal: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
+  tabButton: {
+    width: 80,
+    height: 80,
+    alignItems: "center",
+    justifyContent: "center",
+    color:"white",
+    borderRadius: 10,
+    backgroundColor: "#58A9FF",
+    marginHorizontal: 5,
+  },
+  activeTab: {
+    backgroundColor: "orange",
   },
   tabIcon: {
     width: 30,
     height: 30,
   },
-  activeTab: {
-    borderBottomWidth: 2,
-    borderBottomColor: COLORS.primary,
+  tabText: {
+    marginTop: 5,
+    fontSize: 14,
+    color: "white",
   },
   contentContainer: {
     flex: 1,
@@ -382,6 +370,14 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     marginLeft: 10,
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 5,
   },
 });
 
